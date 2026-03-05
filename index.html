@@ -64,6 +64,22 @@
             will-change: transform;
         }
 
+        /* 优化 1：Bento 智能便当盒布局 - 首个卡片霸占整行 */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+        }
+        @media (min-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            /* 黑科技：当卡片总数为奇数时，第一个卡片横跨两列 */
+            .bento-grid .link-card:first-child:nth-last-child(odd) {
+                grid-column: 1 / -1;
+            }
+        }
+
         .link-card {
             opacity: 0; transform: translateY(30px);
             animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
@@ -77,7 +93,7 @@
         h1.neon-text { color: #ffffff; }
 
         .icon-wrapper {
-            width: 56px; height: 56px; background-color: #27272a; border-radius: 9999px;
+            width: 48px; height: 48px; background-color: #27272a; border-radius: 9999px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), inset 0 1px 0 rgba(255,255,255,0.08);
             transform: translateZ(20px);
@@ -159,7 +175,6 @@
 
     <div id="cursor-dot" class="hidden lg:block"></div>
     <div id="cursor-outline" class="hidden lg:block"></div>
-
     <div class="overclock-alert"></div>
 
     <div id="cli-terminal">
@@ -186,7 +201,7 @@ Type 'help' to see available commands.
     <div class="max-w-6xl w-full mx-auto" id="main-content" style="opacity: 0; transition: opacity 1s ease-in;">
         
         <div class="hud-panel top-6 left-6 hidden xl:block">
-            <div>SYS_AUDIO :: <span id="hud-audio" class="text-zinc-500">OFF (CLICK TO INIT)</span></div>
+            <div>SYS_AUDIO :: <span id="hud-audio" class="text-zinc-500">OFF (CLICK)</span></div>
             <div class="mt-2">STATUS  :: <span class="neon-text animate-pulse">ONLINE</span></div>
             <div class="mt-2 text-zinc-600">CORE :: <span id="hud-core" class="neon-text"></span></div>
             <div class="text-zinc-600">PWR  :: <span id="hud-battery" class="neon-text">100%</span> <span id="hud-charge"></span></div>
@@ -198,7 +213,7 @@ Type 'help' to see available commands.
             <div class="mt-2">LATENCY :: <span id="hud-ping" class="neon-text">12</span>MS</div>
         </div>
 
-        <div class="flex flex-col lg:flex-row gap-16 relative z-10">
+        <div class="flex flex-col lg:flex-row gap-12 relative z-10">
             <div class="lg:w-96 flex-shrink-0 lg:sticky lg:top-8 lg:h-[calc(100vh-4rem)] flex flex-col justify-center items-center tilt-element">
                 <div class="text-center w-full flex flex-col items-center">
                     
@@ -216,7 +231,7 @@ Type 'help' to see available commands.
                         </div>
                     </div>
 
-                    <p id="typewriter-slogan" class="mt-10 text-zinc-400 text-base whitespace-nowrap tracking-wide leading-relaxed font-mono h-6"></p>
+                    <p id="typewriter-slogan" class="mt-10 text-zinc-400 text-sm whitespace-nowrap tracking-wide leading-relaxed font-mono h-6"></p>
 
                     <div class="mt-12 inline-flex items-center gap-3 px-8 py-3 rounded-3xl glass border cursor-target" onclick="document.dispatchEvent(new KeyboardEvent('keydown', {'key': '~'}))">
                         <div class="w-2 h-2 rounded-full animate-pulse" style="background-color: var(--neon);"></div>
@@ -225,16 +240,21 @@ Type 'help' to see available commands.
                 </div>
             </div>
 
-            <div class="flex-1 lg:py-10">
-                <div id="links-container" class="space-y-4"></div>
-                <div class="mt-16 pb-8 text-center lg:text-left pl-2">
-                    <p class="text-xs text-zinc-600 tracking-widest font-mono">© 2026 CHIP • V_2.0 ULTIMATE</p>
+            <div class="flex-1 flex flex-col justify-center lg:py-6">
+                <div id="links-container" class="bento-grid w-full"></div>
+                
+                <div class="mt-12 pb-8 text-center w-full">
+                    <p class="text-xs text-zinc-600 tracking-widest font-mono">
+                        SYS_VER 2.0 // © <span id="footer-year"></span> CHIP // EOF
+                    </p>
                 </div>
             </div>
         </div>
     </div>
+    
 
     <script>
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
         // ==================== 全局状态 ====================
         const pointer = { x: -1000, y: -1000, targetX: -1000, targetY: -1000 };
         const tiltState = { active: false, element: null, rect: null };
@@ -564,14 +584,14 @@ Ping statistics: 3 packets transmitted, 3 received, 0% packet loss.`);
             animateNodes();
         }
 
-        // ==================== 初始化 ====================
+        // ==================== 初始化与双列卡片生成 ====================
         const platforms = [
             { name: "GitHub", href: "https://github.com/Chip0222", icon: "fa-brands fa-github", slogan: "Let’s build from here" },
-            { name: "X", href: "https://x.com/ch1p_0222", icon: "fa-brands fa-x-twitter", slogan: "The everything app" },
-            { name: "Facebook", href: "https://www.facebook.com/profile.php?id=61585810324278", icon: "fa-brands fa-facebook", slogan: "Connect with friends and family" },
-            { name: "Instagram", href: "https://www.instagram.com/ch1p_0222", icon: "fa-brands fa-instagram", slogan: "Capture and share your moments" },
             { name: "YouTube", href: "https://www.youtube.com/@chip_0222", icon: "fa-brands fa-youtube", slogan: "Watch. Listen. Create." },
             { name: "TikTok", href: "https://www.tiktok.com/@ch1p_0222", icon: "fa-brands fa-tiktok", slogan: "Make Your Day" },
+            { name: "Facebook", href: "https://www.facebook.com/profile.php?id=61585810324278", icon: "fa-brands fa-facebook", slogan: "Connect with friends and family" },
+            { name: "Instagram", href: "https://www.instagram.com/ch1p_0222", icon: "fa-brands fa-instagram", slogan: "Capture and share your moments" },
+            { name: "X", href: "https://x.com/ch1p_0222", icon: "fa-brands fa-x-twitter", slogan: "The everything app" },
             { name: "Reddit", href: "https://www.reddit.com/user/chip_0222", icon: "fa-brands fa-reddit", slogan: "Dive into anything" }
         ];
 
@@ -581,16 +601,16 @@ Ping statistics: 3 packets transmitted, 3 received, 0% packet loss.`);
             platforms.forEach((platform, index) => {
                 const cardHTML = `
                     <a href="${platform.href}" target="_blank" rel="noopener noreferrer"
-                       class="link-card tilt-element cursor-target group flex items-center gap-5 bg-zinc-800 border border-zinc-700 rounded-3xl p-6 glass"
+                       class="link-card tilt-element cursor-target group flex items-center gap-4 bg-zinc-800 border border-zinc-700 rounded-3xl p-5 glass"
                        style="animation-delay: ${0.1 + index * 0.1}s">
-                        <div class="icon-wrapper flex items-center justify-center text-4xl text-white">
+                        <div class="icon-wrapper flex items-center justify-center text-2xl text-white">
                             <i class="${platform.icon}"></i>
                         </div>
                         <div class="flex-1 min-w-0" style="transform: translateZ(10px);">
-                            <span class="text-2xl font-semibold text-white">${platform.name}</span>
-                            <p class="text-zinc-400 text-sm mt-0.5">${platform.slogan}</p>
+                            <span class="text-xl font-semibold text-white block truncate">${platform.name}</span>
+                            <p class="text-zinc-400 text-xs mt-1 truncate">${platform.slogan}</p>
                         </div>
-                        <div class="neon-text text-3xl opacity-30 group-hover:opacity-100 transition-all" style="transform: translateZ(20px);">↗</div>
+                        <div class="neon-text text-xl opacity-30 group-hover:opacity-100 transition-all" style="transform: translateZ(20px);">↗</div>
                     </a>
                 `;
                 container.innerHTML += cardHTML;
