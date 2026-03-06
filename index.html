@@ -1,33 +1,775 @@
-[
-            { name: "GitHub", href: "https://github.com/Chip0222", icon: "fa-brands fa-github", slogan: "Let’s build from here" },
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Chip</title>
+    <meta name="description" content=">_ 系统在线 | 赛博漫游者 | 正在同步数字宇宙...">
+    <meta property="og:title" content="Chip 的数字宇宙入口">
+    <meta property="og:description" content=">_ 系统在线 | 赛博漫游者 | 正在同步数字宇宙...">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMGYxNzJhIi8+PHRleHQgeD0iNTAiIHk9IjcwIiBmb250LXNpemU9IjcwIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzAwZmY5ZCI+QzwvdGV4dD48L3N2Zz4=">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --neon: #00ff9d;
+            --hud-color: rgba(0, 255, 157, 0.4);
+            --bg-grad-1: #050505;
+            --bg-grad-2: #0f172a;
+            --avatar-g1: #34d399; 
+            --avatar-g2: #22d3ee; 
+            --avatar-g3: #8b5cf6;
+            --avatar-shadow: rgba(16, 185, 129, 0.5);
+        }
+
+        body.overclock-mode {
+            --neon: #ff003c;
+            --hud-color: rgba(255, 0, 60, 0.6);
+            --bg-grad-1: #1a0005;
+            --bg-grad-2: #2d0010;
+            --avatar-g1: #ef4444; 
+            --avatar-g2: #f97316; 
+            --avatar-g3: #eab308;
+            --avatar-shadow: rgba(239, 68, 68, 0.8);
+        }
+        
+        @media (hover: hover) and (pointer: fine) { * { cursor: none !important; } }
+        
+        body {
+            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+            font-family: 'Inter', system_ui, sans-serif;
+            color: #e2e8f0; overflow-x: hidden;
+            transition: background 1s ease;
+        }
+        
+        .title-font { font-family: 'Space Grotesk', sans-serif; }
+
+        .scan-line {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100px;
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.02), transparent);
+            animation: scan 8s linear infinite; z-index: -1; pointer-events: none;
+        }
+        @keyframes scan { 0% { transform: translateY(-100vh); } 100% { transform: translateY(100vh); } }
+
+        .avatar-border {
+            background: linear-gradient(to bottom right, var(--avatar-g1), var(--avatar-g2), var(--avatar-g3));
+            box-shadow: 0 25px 50px -12px var(--avatar-shadow);
+            transition: background 1s ease, box-shadow 1s ease, transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        /* 优化 1：Bento 智能便当盒布局 - 首个卡片霸占整行 */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+        }
+        @media (min-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            /* 黑科技：当卡片总数为奇数时，第一个卡片横跨两列 */
+            .bento-grid .link-card:first-child:nth-last-child(odd) {
+                grid-column: 1 / -1;
+            }
+        }
+
+        .link-card {
+            opacity: 0; transform: translateY(30px);
+            animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            transition: box-shadow 0.4s ease, border-color 0.4s ease;
+            will-change: transform, opacity; transform-style: preserve-3d;
+        }
+        .link-card:hover { box-shadow: 0 0 40px -10px var(--neon); border-color: var(--neon); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        
+        .neon-text { text-shadow: 0 0 20px var(--neon); color: var(--neon); transition: color 0.5s, text-shadow 0.5s; }
+        h1.neon-text { color: #ffffff; }
+
+        .icon-wrapper {
+            width: 48px; height: 48px; background-color: #27272a; border-radius: 9999px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), inset 0 1px 0 rgba(255,255,255,0.08);
+            transform: translateZ(20px);
+        }
+        .link-card:hover .icon-wrapper { background-color: #3f3f46; transform: translateZ(30px) scale(1.1); }
+
+        .glass { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-color: rgba(255,255,255,0.1); }
+
+        .time-pill { transition: all 0.4s ease; transform-style: preserve-3d; will-change: transform; }
+        .time-pill:hover { box-shadow: 0 0 30px -10px var(--neon); }
+
+        #boot-screen { transition: opacity 0.6s ease-out; will-change: opacity; }
+        .typing-cursor::after { content: '█'; animation: blink 1s step-start infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .glitch-text { position: relative; display: inline-block; }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0;
+            will-change: clip-path, opacity, left;
+        }
+        .glitch-text:hover::before {
+            left: 3px; text-shadow: -2px 0 #ff00c1; clip-path: inset(45% 0 10% 0);
+            animation: glitch-anim-1 0.2s infinite linear alternate-reverse; opacity: 1;
+        }
+        .glitch-text:hover::after {
+            left: -3px; text-shadow: -2px 0 #00fff9; clip-path: inset(10% 0 45% 0);
+            animation: glitch-anim-2 0.3s infinite linear alternate-reverse; opacity: 1;
+        }
+        @keyframes glitch-anim-1 { 0% { clip-path: inset(20% 0 80% 0); } 100% { clip-path: inset(60% 0 10% 0); } }
+        @keyframes glitch-anim-2 { 0% { clip-path: inset(10% 0 60% 0); } 100% { clip-path: inset(80% 0 20% 0); } }
+
+        #cursor-dot {
+            position: fixed; top: 0; left: 0; width: 6px; height: 6px; background-color: var(--neon);
+            border-radius: 50%; pointer-events: none; z-index: 10000;
+            box-shadow: 0 0 10px var(--neon); will-change: transform; transition: background-color 0.5s, box-shadow 0.5s;
+        }
+        #cursor-outline {
+            position: fixed; top: 0; left: 0; width: 32px; height: 32px; border: 1px solid var(--hud-color);
+            border-radius: 50%; pointer-events: none; z-index: 9999;
+            transition: width 0.15s, height 0.15s, background-color 0.15s, border-color 0.5s; will-change: transform, width, height;
+        }
+        .cursor-hover #cursor-outline { width: 48px; height: 48px; background-color: rgba(255, 255, 255, 0.05); border-color: var(--neon); }
+
+        #node-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -3; pointer-events: none; will-change: transform; }
+        #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none; opacity: 0; transition: opacity 2s ease-in; }
+
+        .hud-panel {
+            position: fixed; font-family: monospace; font-size: 10px; color: var(--hud-color);
+            letter-spacing: 0.1em; line-height: 1.6; pointer-events: none; z-index: 0;
+            text-transform: uppercase; transition: color 0.5s;
+        }
+
+        #cli-terminal {
+            position: fixed; top: -100%; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 800px; height: 400px; background: rgba(5, 5, 5, 0.9);
+            border: 1px solid var(--neon); border-top: none; border-radius: 0 0 10px 10px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 20px var(--hud-color);
+            z-index: 99999; display: flex; flex-direction: column; font-family: monospace;
+            transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s, border-color 0.5s;
+        }
+        #cli-terminal.active { top: 0; }
+        #cli-output { flex: 1; padding: 15px; overflow-y: auto; color: #a1a1aa; font-size: 14px; white-space: pre-wrap; }
+        .cli-input-line { display: flex; padding: 10px 15px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); }
+        .cli-prompt { color: var(--neon); margin-right: 10px; }
+        #cli-input { flex: 1; background: transparent; border: none; color: #fff; font-family: monospace; font-size: 14px; outline: none; }
+        
+        .overclock-alert { position: fixed; inset: 0; border: 4px solid var(--neon); z-index: 999998; pointer-events: none; opacity: 0; transition: opacity 0.5s; box-shadow: inset 0 0 50px var(--hud-color); }
+        body.overclock-mode .overclock-alert { opacity: 1; animation: alert-pulse 2s infinite; }
+        @keyframes alert-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-8">
+
+    <noscript>
+        <div style="position: fixed; inset: 0; background: #050505; color: #00ff9d; font-family: monospace; display: flex; align-items: center; justify-content: center; z-index: 999999;">
+            >_ SYSTEM HALTED: JavaScript is required.
+        </div>
+    </noscript>
+
+    <div id="cursor-dot" class="hidden lg:block"></div>
+    <div id="cursor-outline" class="hidden lg:block"></div>
+    <div class="overclock-alert"></div>
+
+    <div id="cli-terminal">
+        <div id="cli-output">CHIP_OS [Version 1.0.5]
+(c) 2026 Chip Corporation. All rights reserved.
+Type 'help' to see available commands.
+</div>
+        <div class="cli-input-line">
+            <span class="cli-prompt">root@chip:~#</span>
+            <input type="text" id="cli-input" autocomplete="off" spellcheck="false" autofocus>
+        </div>
+    </div>
+
+    <canvas id="node-canvas"></canvas>
+    <canvas id="matrix-canvas"></canvas>
+
+    <div id="boot-screen" class="fixed inset-0 bg-black z-50 flex flex-col justify-center items-start p-8 md:p-24 font-mono text-emerald-400 text-sm md:text-lg" style="color: var(--neon);">
+        <div id="boot-text-container" class="max-w-3xl space-y-2"></div>
+        <div class="mt-2 typing-cursor" id="boot-cursor">_</div>
+    </div>
+
+    <div class="scan-line"></div>
+
+    <div class="max-w-6xl w-full mx-auto" id="main-content" style="opacity: 0; transition: opacity 1s ease-in;">
+        
+        <div class="hud-panel top-6 left-6 hidden xl:block">
+            <div>SYS_AUDIO :: <span id="hud-audio" class="text-zinc-500">OFF (CLICK)</span></div>
+            <div class="mt-2">STATUS  :: <span class="neon-text animate-pulse">ONLINE</span></div>
+            <div class="mt-2 text-zinc-600">CORE :: <span id="hud-core" class="neon-text"></span></div>
+            <div class="text-zinc-600">PWR  :: <span id="hud-battery" class="neon-text">100%</span> <span id="hud-charge"></span></div>
+        </div>
+
+        <div class="hud-panel bottom-6 right-6 hidden xl:block text-right">
+            <div>UPTIME :: <span id="hud-uptime" class="neon-text">00:00:00</span></div>
+            <div class="mt-2 text-zinc-600">OVERCLOCK :: <span id="hud-overclock">LOCKED</span></div>
+            <div class="mt-2">LATENCY :: <span id="hud-ping" class="neon-text">12</span>MS</div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-12 relative z-10">
+            <div class="lg:w-96 flex-shrink-0 lg:sticky lg:top-8 lg:h-[calc(100vh-4rem)] flex flex-col justify-center items-center tilt-element">
+                <div class="text-center w-full flex flex-col items-center">
+                    
+                    <div id="c-logo" class="w-40 h-40 rounded-3xl avatar-border p-1 cursor-target" title="Press '~' to open terminal">
+                        <div class="w-full h-full bg-zinc-950 rounded-3xl flex items-center justify-center overflow-hidden">
+                            <span class="text-8xl font-bold title-font tracking-tighter neon-text">C</span>
+                        </div>
+                    </div>
+
+                    <h1 class="mt-8 text-7xl font-semibold title-font tracking-tighter neon-text glitch-text cursor-target" data-text="chip">chip</h1>
+
+                    <div class="mt-8 flex justify-center cursor-target">
+                        <div class="time-pill glass px-10 py-4 rounded-3xl border flex items-center justify-center shadow-inner">
+                            <div id="clock" class="text-5xl font-semibold title-font tracking-tighter neon-text"></div>
+                        </div>
+                    </div>
+
+                    <p id="typewriter-slogan" class="mt-10 text-zinc-400 text-sm whitespace-nowrap tracking-wide leading-relaxed font-mono h-6"></p>
+
+                    <div class="mt-12 inline-flex items-center gap-3 px-8 py-3 rounded-3xl glass border cursor-target" onclick="document.dispatchEvent(new KeyboardEvent('keydown', {'key': '~'}))">
+                        <div class="w-2 h-2 rounded-full animate-pulse" style="background-color: var(--neon);"></div>
+                        <span class="text-sm font-medium tracking-widest text-zinc-400 hover:text-white transition-colors">我的数字宇宙入口</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col justify-center lg:py-6">
+                <div id="links-container" class="bento-grid w-full"></div>
+                
+                <div class="mt-12 pb-8 text-center w-full">
+                    <p class="text-xs text-zinc-600 tracking-widest font-mono">
+                        SYS_VER 2.0 // © <span id="footer-year"></span> CHIP // EOF
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script>
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+        // ==================== 全局状态 ====================
+        const pointer = { x: -1000, y: -1000, targetX: -1000, targetY: -1000 };
+        const tiltState = { active: false, element: null, rect: null };
+        let isOverclocked = false;
+        
+        window.addEventListener('mousemove', (e) => {
+            pointer.targetX = e.clientX;
+            pointer.targetY = e.clientY;
+        }, { passive: true });
+
+        // ==================== 音效引擎 ====================
+        let audioCtx;
+        let soundEnabled = false;
+
+        function initAudio() {
+            if(soundEnabled) return;
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+                soundEnabled = true;
+                const hudAudio = document.getElementById('hud-audio');
+                if(hudAudio) {
+                    hudAudio.className = 'neon-text';
+                    hudAudio.innerText = 'ONLINE (ACTIVE)';
+                }
+            } catch(e) { console.log('Audio init failed'); }
+        }
+
+        document.body.addEventListener('click', initAudio, { once: true });
+
+        function playHoverSound() {
+            if(!soundEnabled || audioCtx.state === 'suspended') return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(isOverclocked ? 1200 : 800, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1500, audioCtx.currentTime + 0.05);
+            gain.gain.setValueAtTime(0.015, audioCtx.currentTime); 
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+        }
+
+        function playClickSound() {
+            if(!soundEnabled || audioCtx.state === 'suspended') return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        // ==================== 打字机 ====================
+        function initTypewriter() {
+            const text = ">_ 系统在线 | 赛博漫游者 | 正在同步数字宇宙...";
+            const container = document.getElementById('typewriter-slogan');
+            container.innerHTML = '';
+            let i = 0;
+            function typeChar() {
+                if (i < text.length) {
+                    container.innerHTML = text.substring(0, i + 1) + '<span class="opacity-50">█</span>';
+                    i++;
+                    setTimeout(typeChar, 40 + Math.random() * 40);
+                } else {
+                    container.innerHTML = text + '<span class="animate-pulse opacity-50 ml-1">_</span>';
+                }
+            }
+            setTimeout(typeChar, 500); 
+        }
+
+        // ==================== 隐藏终端 ====================
+        const cliTerminal = document.getElementById('cli-terminal');
+        const cliInput = document.getElementById('cli-input');
+        const cliOutput = document.getElementById('cli-output');
+        let cliActive = false;
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === '~' || e.key === '`') {
+                e.preventDefault();
+                cliActive = !cliActive;
+                if(cliActive) {
+                    cliTerminal.classList.add('active');
+                    setTimeout(() => cliInput.focus(), 400);
+                } else {
+                    cliTerminal.classList.remove('active');
+                    cliInput.blur();
+                }
+            }
+        });
+
+        cliInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = cliInput.value.trim().toLowerCase();
+                cliInput.value = '';
+                printToCLI(`root@chip:~# ${cmd}`);
+                
+                switch(cmd) {
+                    case '': break;
+                    case 'help':
+                        printToCLI(`Available commands:
+  help    - Show this message
+  whoami  - Display profile info
+  ping    - Test node latency
+  reboot  - Reload the interface
+  matrix  - Inject green rain
+  clear   - Clear terminal output`);
+                        break;
+                    case 'whoami':
+                        printToCLI(`> Node Explorer: CHIP
+> Tech Stack: ShellCrash, Clash, Linux Servers
+> Hardware: RackNerd, RedMi AX6000
+> Status: Coding the future...`);
+                        break;
+                    case 'ping':
+                        printToCLI(`Pinging global nodes...
+Reply from 104.21.XX.XX: time=12ms
+Reply from 104.21.XX.XX: time=11ms
+Reply from 104.21.XX.XX: time=12ms
+Ping statistics: 3 packets transmitted, 3 received, 0% packet loss.`);
+                        break;
+                    case 'clear': cliOutput.innerHTML = ''; break;
+                    case 'reboot': location.reload(); break;
+                    case 'matrix': document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'm'}));
+                                   printToCLI('> Matrix initialized.'); break;
+                    case 'sudo rm -rf /': printToCLI(`> Nice try. Permission denied.`); break;
+                    default: printToCLI(`bash: ${cmd}: command not found`);
+                }
+            }
+        });
+
+        function printToCLI(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            cliOutput.appendChild(div);
+            cliOutput.scrollTop = cliOutput.scrollHeight;
+        }
+
+        // ==================== Konami 秘籍 ====================
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiIndex = 0;
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    activateOverclock();
+                    konamiIndex = 0;
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        });
+
+        function activateOverclock() {
+            if(isOverclocked) return;
+            isOverclocked = true;
+            document.body.classList.add('overclock-mode');
+            document.getElementById('hud-overclock').innerHTML = '<span class="neon-text animate-pulse">UNLOCKED</span>';
+            printToCLI('> WARNING: OVERCLOCK MODE ACTIVATED. LIMITERS REMOVED.');
+            if(soundEnabled) playClickSound(); 
+        }
+
+        // ==================== 真实数据遥测与时钟 ====================
+        const originalTitle = document.title;
+        document.addEventListener('visibilitychange', () => {
+            document.title = document.hidden ? '[ 信号丢失... ] 待机中' : originalTitle;
+        });
+
+        const startTime = Date.now();
+        function updateUptime() {
+            const uptimeEl = document.getElementById('hud-uptime');
+            if(uptimeEl) {
+                setInterval(() => {
+                    const diff = Math.floor((Date.now() - startTime) / 1000);
+                    const h = String(Math.floor(diff / 3600)).padStart(2, '0');
+                    const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+                    const s = String(diff % 60).padStart(2, '0');
+                    uptimeEl.innerText = `${h}:${m}:${s}`;
+                }, 1000);
+            }
+        }
+
+        function initRealTelemetry() {
+            const cores = navigator.hardwareConcurrency || 'UNKNOWN';
+            const coreEl = document.getElementById('hud-core');
+            if(coreEl) coreEl.innerText = `${cores} THREADS`;
+
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(battery => {
+                    const updateBattery = () => {
+                        document.getElementById('hud-battery').innerText = `${Math.round(battery.level * 100)}%`;
+                        document.getElementById('hud-charge').innerText = battery.charging ? '[AC]' : '[BATT]';
+                    };
+                    updateBattery();
+                    battery.addEventListener('levelchange', updateBattery);
+                    battery.addEventListener('chargingchange', updateBattery);
+                });
+            }
+        }
+
+        function updateClock() {
+            const clock = document.getElementById('clock');
+            if (!clock) return;
+            function tick() {
+                const now = new Date();
+                clock.textContent = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            }
+            tick(); setInterval(tick, 1000); 
+        }
+
+        function updateHUD() {
+            const pingEl = document.getElementById('hud-ping');
+            if(pingEl) setInterval(() => { pingEl.innerText = Math.floor(Math.random() * 15) + (isOverclocked ? 2 : 8); }, 2000);
+            updateUptime(); 
+        }
+
+        // ==================== GPU渲染循环 ====================
+        function startRenderLoop() {
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorOutline = document.getElementById('cursor-outline');
+            
+            function render() {
+                pointer.x += (pointer.targetX - pointer.x) * 0.2;
+                pointer.y += (pointer.targetY - pointer.y) * 0.2;
+                
+                if (cursorDot && cursorOutline) {
+                    cursorDot.style.transform = `translate3d(calc(${pointer.targetX}px - 50%), calc(${pointer.targetY}px - 50%), 0)`;
+                    cursorOutline.style.transform = `translate3d(calc(${pointer.x}px - 50%), calc(${pointer.y}px - 50%), 0)`;
+                }
+
+                if (tiltState.active && tiltState.element && tiltState.rect) {
+                    const el = tiltState.element;
+                    const rect = tiltState.rect;
+                    
+                    const rotateX = (((pointer.targetY - rect.top) - rect.height/2) / (rect.height/2)) * -10; 
+                    const rotateY = (((pointer.targetX - rect.left) - rect.width/2) / (rect.width/2)) * 10;
+                    
+                    const magneticPullX = rotateY * 0.8;
+                    const magneticPullY = rotateX * -0.8;
+
+                    const baseTransform = el.classList.contains('link-card') 
+                        ? `translate3d(${magneticPullX}px, calc(-8px + ${magneticPullY}px), 0) scale3d(1.03, 1.03, 1.03)` 
+                        : `translate3d(${magneticPullX}px, ${magneticPullY}px, 0) scale3d(1.02, 1.02, 1.02)`;
+                        
+                    el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) ${baseTransform}`;
+                }
+                requestAnimationFrame(render);
+            }
+            requestAnimationFrame(render);
+        }
+
+        // ==================== 极速粒子节点 ====================
+        function initNodeNetwork() {
+            const canvas = document.getElementById('node-canvas');
+            const ctx = canvas.getContext('2d', { alpha: true });
+            let width, height, particles = [];
+            
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                width = window.innerWidth; height = window.innerHeight;
+                canvas.width = width * dpr; canvas.height = height * dpr;
+                canvas.style.width = `${width}px`; canvas.style.height = `${height}px`;
+                ctx.scale(dpr, dpr);
+            }
+            let resizeTimeout;
+            window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(resize, 200); }, { passive: true });
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width; this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
+                    this.radius = Math.random() * 1.5 + 0.5;
+                }
+                update() {
+                    const speedMultiplier = isOverclocked ? 3 : 1;
+                    this.x += this.vx * speedMultiplier; this.y += this.vy * speedMultiplier;
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+                }
+                draw() {
+                    ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--neon').trim();
+                    ctx.globalAlpha = 0.3; ctx.fill(); ctx.globalAlpha = 1;
+                }
+            }
+
+            const particleCount = Math.min(Math.floor(window.innerWidth / 30), 40);
+            for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+
+            function animateNodes() {
+                ctx.clearRect(0, 0, width, height);
+                const color = getComputedStyle(document.body).getPropertyValue('--neon').trim();
+                
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update(); particles[i].draw();
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+                        if (Math.abs(dx) < 100 && Math.abs(dy) < 100) {
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < 100) {
+                                ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
+                                ctx.strokeStyle = color; ctx.globalAlpha = 0.15 - dist/100 * 0.15;
+                                ctx.lineWidth = 0.5; ctx.stroke(); ctx.globalAlpha = 1;
+                            }
+                        }
+                    }
+
+                    if (pointer.targetX > 0 && pointer.targetY > 0) {
+                        const dxMouse = particles[i].x - pointer.targetX, dyMouse = particles[i].y - pointer.targetY;
+                        if (Math.abs(dxMouse) < 180 && Math.abs(dyMouse) < 180) {
+                            const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+                            if (distMouse < 180) {
+                                ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(pointer.targetX, pointer.targetY);
+                                ctx.strokeStyle = color; ctx.globalAlpha = 0.3 - distMouse/180 * 0.3;
+                                ctx.lineWidth = 1; ctx.stroke(); ctx.globalAlpha = 1;
+                            }
+                        }
+                    }
+                }
+                requestAnimationFrame(animateNodes);
+            }
+            animateNodes();
+        }
+
+        // ==================== 初始化与双列卡片生成 ====================
+        const platforms = [
+            { 
+                name: "GitHub", 
+                href: "https://github.com/Chip0222", 
+                icon: "fa-brands fa-github", 
+                slogan: "Executing version control protocols..." // 执行版本控制协议... (紧扣 Git 核心功能)
+            },
             { 
                 name: "Steam", 
                 href: "https://steamcommunity.com/profiles/76561198181614733", 
                 icon: "fa-brands fa-steam", 
-                slogan: "Syncing digital library..." 
+                slogan: "Initializing Steamworks API & matchmaking..." // 初始化 Steamworks API 与匹配系统... (紧扣 Steam 游戏底层支持和联机功能)
             },
             { 
                 name: "Epic Games", 
                 href: "https://launcher.store.epicgames.com/u/35fadb597702450590c008c2ed79bdff", 
-                
-                slogan: "Engine initialized. Ready to launch." 
+                svg: `<svg t="1772760300695" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7953" width="1em" height="1em" fill="currentColor"><path d="M150.954667 0C92.416 0 70.826667 21.589333 70.826667 80.128v706.773333c0 6.613333 0.298667 12.757333 0.810666 18.389334 1.450667 12.885333 1.578667 25.301333 13.525334 39.338666 1.109333 1.621333 13.226667 10.496 13.226666 10.496 6.442667 3.242667 10.965333 5.461333 18.346667 8.533334l355.584 148.992c18.389333 8.405333 26.154667 11.776 39.509333 11.306666H512c13.525333 0.469333 21.290667-2.901333 39.68-11.306666l355.541333-148.992c7.424-3.072 11.776-5.290667 18.389334-8.533334 0 0 12.117333-9.045333 13.226666-10.496 11.946667-14.037333 12.074667-26.453333 13.525334-39.338666 0.512-5.632 0.853333-11.776 0.853333-18.346667V80.085333C953.173333 21.589333 931.541333 0 873.002667 0z m569.856 132.693333h29.013333c48.384 0 71.936 23.552 71.936 72.405334v80.170666h-58.538667V208.341333c0-15.658667-7.253333-22.912-22.4-22.912h-9.984c-15.658667 0-22.912 7.253333-22.912 22.912v248.021334c0 15.616 7.253333 22.869333 22.912 22.869333h11.093334c15.018667 0 22.272-7.253333 22.272-22.869333v-88.746667h58.709333v91.477333c0 48.853333-24.064 72.874667-72.576 72.874667h-29.525333c-48.682667 0-72.533333-24.192-72.533334-72.874667V205.610667c0-48.725333 23.850667-72.917333 72.533334-72.917334z m-520.021334 3.242667H333.653333v54.485333H260.437333v111.104h70.485334v54.357334H260.437333v118.357333h74.197334v54.357333H200.789333z m162.858667 0h93.696c48.512 0 72.533333 24.192 72.533333 73.045333v104.32c0 48.853333-24.021333 72.917333-72.533333 72.917334h-33.877333v142.378666H363.648z m193.194667 0h59.648v392.661333h-59.648z m-133.546667 52.906667v144.64h24.704c14.976 0 22.229333-7.253333 22.229333-23.04v-98.56c0-15.786667-7.253333-23.04-22.229333-23.04zM258.816 622.08h8.874667l1.962666 0.298667h3.2l1.621334 0.512h1.621333l1.621333 0.469333 1.578667 0.341333 1.450667 0.298667 1.450666 0.341333 1.450667 0.298667 1.621333 0.512 1.28 0.298667 1.28 0.512 1.621334 0.469333 1.28 0.64 1.664 0.64 1.450666 0.64 1.28 0.853333 1.621334 0.597334 1.109333 0.853333 1.621333 0.768 1.28 0.853333 1.450667 0.768 1.28 0.981334 1.28 0.810666 1.28 0.938667 1.322667 0.981333 1.28 1.109334 1.28 0.981333-0.938667 1.28-1.152 1.152-0.938667 1.28-1.152 1.28-0.938666 1.152-0.981334 1.109333-1.152 1.28-0.938666 1.28-0.981334 1.152-1.109333 1.28-0.981333 1.28-1.152 1.28-0.938667 1.152-0.981333 1.28-1.109334 1.28-0.981333 1.322667-1.109333 1.109333-0.981334 1.28-1.28-0.938666-1.28-1.109334-1.28-0.853333-1.493333-0.938667-1.109333-0.810666-1.450667-0.810667-1.28-0.810667-1.493333-0.810666-1.28-0.64-1.28-0.64-1.28-0.469334-1.450667-0.512-1.621333-0.426666-1.28-0.341334-1.621334-0.341333-1.621333-0.341333-1.621333-0.128h-1.749334l-1.962666-0.341334h-3.2l-1.621334 0.170667h-1.621333l-1.621333 0.469333-1.450667 0.341334-1.450667 0.469333-1.578666 0.469333-1.28 0.64-1.621334 0.682667-1.152 0.768-1.28 0.853333-1.28 0.768-1.152 0.981334-1.109333 0.981333-1.152 0.938667-0.938667 1.152-1.28 1.109333-0.853333 1.28-0.768 1.152-0.981333 1.28-0.64 1.450667-0.853334 1.28-0.768 1.450666-0.469333 1.450667-0.682667 1.450667-0.426666 1.621333-0.213334 1.621333-0.469333 1.450667-0.341333 1.792v1.578667l-0.298667 1.621333v3.84l0.170667 1.664 0.128 1.450667 0.170666 1.578666 0.341334 1.621334 0.469333 1.28 0.170667 1.621333 0.469333 1.28 0.512 1.28 0.64 1.664 0.810667 1.578667 0.64 1.28 0.810666 1.28 0.938667 1.322666 0.981333 1.28 0.810667 1.152 1.28 1.109334 0.981333 1.152 1.109334 0.938666 1.28 0.981334 1.28 0.981333 1.322666 0.810667 1.28 0.768 1.450667 0.682666 1.621333 0.64 1.28 0.64 1.621334 0.469334 1.621333 0.512 1.621333 0.298666 1.578667 0.341334 1.621333 0.170666 1.962667 0.128h5.290667l1.962666-0.298666h1.578667l1.621333-0.512 1.621334-0.298667 1.621333-0.512 1.450667-0.298667 1.450666-0.64 1.28-0.64 1.621334-0.682666 0.981333-0.64 1.28-0.810667v-14.805333h-23.552v-23.893334h53.205333v53.248l-1.109333 0.938667-1.28 0.981333-1.152 0.810667-1.28 0.981333-1.28 0.768-1.28 0.981334-1.28 0.810666-1.322667 0.810667-1.621333 0.810667-1.450667 0.810666-1.28 0.810667-1.621333 0.64-1.28 0.810667-1.621333 0.64-1.621334 0.64-1.621333 0.64-1.450667 0.64-1.450666 0.469333-1.450667 0.512-1.578667 0.469333-1.450666 0.469334-1.621334 0.512-1.450666 0.298666-1.621334 0.341334-1.621333 0.341333-1.621333 0.298667-1.578667 0.170666-1.621333 0.170667-1.621334 0.170667-1.92 0.128-1.621333 0.170666-1.792 0.170667h-8.362667l-1.792-0.341333h-1.621333l-1.578667-0.298667h-1.621333l-1.621333-0.512-1.621334-0.298667-1.621333-0.341333-1.578667-0.298667-1.28-0.512-1.621333-0.298666-1.621333-0.512-1.450667-0.64-1.450667-0.469334-1.621333-0.64-1.450667-0.64-1.621333-0.64-1.28-0.682666-1.621333-0.768-1.109334-0.853334-1.621333-0.768-1.152-0.853333-1.28-0.768-1.28-0.981333-1.28-0.981334-1.450667-0.938666-0.981333-0.981334-1.28-0.981333-1.152-1.109333-1.109333-0.981334-1.152-1.109333-0.938667-1.152-1.152-1.109333-0.938667-1.28-0.981333-1.152-0.810667-1.28-0.981333-1.28-0.810667-1.28-0.768-1.28-0.853333-1.493334-0.768-1.28-0.64-1.450666-0.64-1.450667-0.682667-1.450667-0.64-1.450666-0.469333-1.28-0.64-1.450667-0.341333-1.450667-0.469334-1.450666-0.341333-1.621334-0.469333-1.450666-0.341334-1.621334-0.128-1.450666-0.341333-1.621334-0.170667-1.450666-0.128-1.621334-0.170666-1.578666-0.170667-1.621334v-8.874666l0.341333-1.621334v-1.749333l0.426667-1.621333v-1.621334l0.512-1.621333 0.512-1.578667 0.298667-1.621333 0.469333-1.450667 0.512-1.621333 0.469333-1.450667 0.64-1.621333 0.64-1.450667 0.682667-1.450666 0.64-1.450667 0.64-1.450667 0.810667-1.450666 0.810666-1.28 0.768-1.28 0.853334-1.28 0.768-1.28 0.981333-1.322667 0.981333-1.28 0.938667-1.28 1.152-1.152 0.938667-1.109333 0.981333-1.152 1.28-1.109334 0.981333-1.152 1.28-0.981333 1.152-1.109333 1.28-0.981334 1.28-0.938666 1.28-0.853334 1.28-0.938666 1.28-0.810667 1.322667-0.810667 1.450667-0.810666 1.621333-0.810667 1.28-0.768 1.621333-0.682667 1.450667-0.64 1.621333-0.810666 1.28-0.426667 1.621334-0.512 1.450666-0.64 1.450667-0.341333 1.450667-0.469334 1.621333-0.341333 1.450667-0.469333 1.578666-0.341334h1.621334l1.621333-0.469333h1.621333l1.621334-0.341333h1.578666z m511.530667 0.298667h8.832l1.962666 0.341333h3.2l1.621334 0.469333h1.92l1.621333 0.512 1.450667 0.298667 1.621333 0.341333 1.621333 0.298667 1.450667 0.341333 1.621333 0.469334 1.578667 0.512 1.28 0.298666 1.621333 0.64 1.621334 0.512 1.28 0.64 1.621333 0.64 1.621333 0.64 1.450667 0.853334 1.152 0.597333 1.578667 0.853333 1.450666 0.768 1.28 0.810667 1.493334 0.981333 1.28 0.768 1.28 0.981334 1.28 0.981333 1.28 0.938667-0.938667 1.28-0.810667 1.322666-0.981333 1.28-0.938667 1.28-0.981333 1.450667-0.810667 1.28-0.981333 1.28-0.938667 1.322667-0.853333 1.28-0.938667 1.28-0.981333 1.28-0.938667 1.322666-0.853333 1.450667-0.938667 1.28-1.109333 1.28-0.853333 1.28-0.938667 1.322667-1.28-0.981334-1.450667-0.810666-1.28-0.768-1.28-0.981334-1.493333-0.64-1.28-0.853333-1.621333-0.597333-1.109334-0.64-1.621333-0.682667-1.28-0.64-1.28-0.469333-1.450667-0.64-1.621333-0.469334-1.621333-0.512-1.621334-0.469333-1.749333-0.341333-1.621333-0.298667-1.621334-0.341333-1.621333-0.170667-1.578667-0.170667-1.450666-0.128h-3.584l-1.749334 0.298667-1.621333 0.341333-1.621333 0.298667-1.28 0.682667-1.109334 0.64-1.450666 1.28-0.981334 1.450666-0.64 1.450667v4.010667l0.810667 1.792 0.64 0.981333 1.109333 1.109333 1.621334 0.853334 1.28 0.768 1.621333 0.64 1.621333 0.64 2.090667 0.64 1.28 0.341333 1.28 0.469333 1.621333 0.341334 1.28 0.469333 1.621334 0.341333 1.792 0.469334 1.749333 0.469333 1.792 0.512 1.792 0.298667 1.578667 0.512 1.792 0.469333 1.621333 0.341333 1.578667 0.469334 1.621333 0.469333 1.621333 0.512 1.621334 0.469333 1.450666 0.469334 1.621334 0.512 1.578666 0.64 1.621334 0.810666 1.621333 0.64 1.621333 0.810667 1.621334 0.810667 1.28 0.810666 1.28 0.768 1.450666 0.981334 1.152 0.853333 1.450667 1.109333 1.109333 1.109334 1.28 1.28 1.152 1.152 0.810667 1.28 1.109333 1.621333 0.810667 1.109333 0.64 1.621334 0.810667 1.109333 0.469333 1.621333 0.512 1.28 0.298667 1.621334 0.341333 1.621333 0.298667 1.621333 0.170666 1.621334 0.170667 1.578666v4.053334l-0.170667 1.749333-0.170666 1.621333-0.128 1.792-0.341334 1.621334-0.469333 1.578666-0.341333 1.621334-0.469334 1.621333-0.64 1.450667-0.64 1.28-0.682666 1.450666-0.768 1.28-0.981334 1.28-0.853333 1.28-0.768 1.322667-1.109333 1.152-0.981334 1.109333-1.152 0.981334-1.28 1.109333-1.109333 0.981333-1.28 0.981334-1.28 0.768-1.322667 0.981333-1.621333 0.810667-1.28 0.64-1.621333 0.853333-1.621334 0.597333-1.578666 0.64-1.621334 0.512-1.621333 0.469334-1.28 0.469333-1.621333 0.341333-1.621334 0.341334-1.28 0.298666-1.621333 0.341334h-1.621333l-1.578667 0.298666h-1.621333l-1.621334 0.341334h-11.946666l-1.578667-0.170667-1.621333-0.170667-1.792-0.128-1.621334-0.341333-1.578666-0.170667-1.621334-0.298666-1.621333-0.341334-1.792-0.469333-1.578667-0.341333-1.621333-0.469334-1.621333-0.341333-1.621334-0.469333-1.578666-0.512-1.621334-0.64-1.450666-0.469334-1.621334-0.469333-1.621333-0.682667-1.28-0.64-1.621333-0.64-1.28-0.810666-1.621334-0.64-1.450666-0.810667-1.109334-0.810667-1.621333-0.810666-1.152-0.768-1.450667-0.853334-1.28-0.938666-1.28-0.981334-1.28-0.938666-1.28-0.981334-1.152-0.981333-1.28-1.109333 0.938667-1.28 1.152-1.152 0.981333-1.28 1.109334-1.28 0.981333-1.152 0.938667-1.28 1.152-1.28 0.981333-1.152 1.109333-1.28 0.981334-1.109334 1.109333-1.28 0.981333-1.28 0.938667-1.152 1.152-1.28 0.981333-1.28 1.109334-1.152 1.152-1.28 1.109333 0.938667 1.621333 0.981333 1.109334 0.981334 1.621333 0.938666 1.28 0.853334 1.450667 0.938666 1.28 0.810667 1.493333 0.64 1.28 0.810667 1.450667 0.64 1.621333 0.64 1.28 0.64 1.621333 0.469333 1.28 0.682667 1.621334 0.426666 1.578666 0.512 1.621334 0.512 1.621333 0.298667 1.621333 0.341333 1.621334 0.298667h1.749333l1.621333 0.512h8.874667l1.621333-0.341333 1.578667-0.341334 1.28-0.298666 1.28-0.469334 1.152-0.682666 1.450667-0.938667 0.853333-1.152 0.768-1.28 0.469333-1.621333v-3.712l-0.64-1.578667-0.938666-1.28-0.981334-0.981333-1.450666-0.981334-1.152-0.64-1.578667-0.64-1.621333-0.64-1.92-0.853333-1.152-0.298667-1.28-0.341333-1.621334-0.426667-1.28-0.341333-1.621333-0.512-1.621333-0.298667-1.749334-0.512-1.621333-0.298666-1.792-0.512-1.578667-0.298667-1.621333-0.512-1.621333-0.298667-1.621334-0.512-1.621333-0.426666-1.578667-0.341334-1.450666-0.512-1.450667-0.469333-1.450667-0.512-1.621333-0.64-1.792-0.64-1.621333-0.64-1.578667-0.64-1.621333-0.810667-1.621334-0.810666-1.109333-0.810667-1.621333-0.810667-1.152-0.938666-1.450667-0.853334-0.938667-0.938666-1.152-1.109334-1.28-1.152-0.981333-1.109333-0.938667-1.152-0.853333-1.109333-0.768-1.28-0.853333-1.450667-0.597334-1.152-0.512-1.28-0.469333-1.450667-0.469333-1.28-0.341334-1.621333-0.298666-1.450667v-1.621333l-0.341334-1.621333v-6.912l0.170667-1.621334 0.170667-1.621333 0.298666-1.28 0.341334-1.621333 0.469333-1.28 0.341333-1.621334 0.64-1.28 0.64-1.621333 0.64-1.28 0.810667-1.621333 0.810667-1.28 1.109333-1.28 0.853333-1.28 1.28-1.28 1.109334-1.152 0.981333-1.28 1.450667-1.152 0.938666-0.810667 1.450667-0.981333 1.28-0.938667 1.28-0.853333 1.621333-0.768 1.28-0.64 1.664-0.810667 1.28-0.64 1.621334-0.512 1.578666-0.64 1.621334-0.469333 1.152-0.341334 1.578666-0.298666 1.28-0.341334 1.621334-0.298666 1.621333-0.341334 1.621333-0.170666 1.621334-0.170667 1.621333-0.128z m-394.112 1.152h30.165333l0.64 1.450666 0.64 1.450667 0.64 1.450667 0.469333 1.621333 0.64 1.450667 0.64 1.450666 0.682667 1.450667 0.64 1.450667 0.469333 1.450666 0.810667 1.578667 0.64 1.450667 0.64 1.493333 0.341333 1.450667 0.64 1.450666 0.810667 1.450667 0.64 1.578667 0.64 1.450666 0.469333 1.450667 0.64 1.450667 0.853334 1.450666 0.426666 1.450667 0.682667 1.621333 0.469333 1.621334 0.64 1.28 0.853334 1.621333 0.597333 1.28 0.64 1.621333 0.512 1.621334 0.469333 1.28 0.810667 1.621333 0.64 1.28 0.64 1.621333 0.469333 1.28 0.682667 1.621334 0.810667 1.621333 0.64 1.450667 0.469333 1.450666 0.469333 1.450667 0.64 1.450667 0.853334 1.450666 0.597333 1.578667 0.682667 1.493333 0.426666 1.450667 0.682667 1.450667 0.64 1.450666 0.64 1.450667 0.64 1.578667 0.512 1.450666 0.64 1.450667 0.810667 1.450667 0.64 1.450666 0.64 1.450667 0.341333 1.621333 0.64 1.450667 0.810667 1.450667 0.64 1.450666 0.469333 1.450667 0.64 1.450667 0.64 1.621333 0.853333 1.621333 0.426667 1.28 0.682667 1.621334 0.469333 1.28 0.64 1.621333 0.810667 1.621333 0.64 1.28 0.469333 1.621334 0.682667 1.28 0.469333 1.621333 0.810667 1.28 0.64 1.621333 0.469333 1.621334 0.64 1.28 0.682667 1.621333 0.768 1.28 0.682666 1.621333 0.426667 1.578667 0.512 1.28 0.64 1.621333 0.853333 1.28h-33.408l-0.853333-1.408-0.426667-1.450666-0.682666-1.450667-0.64-1.621333-0.469334-1.450667-0.64-1.450667-0.64-1.450666-0.512-1.450667-0.64-1.450667-0.64-1.450666-0.469333-1.450667-0.64-1.621333-0.64-1.450667-0.512-1.450667-0.64-1.450666H367.658667l-0.64 1.621333-0.469334 1.28-0.64 1.621333-0.810666 1.578667-0.341334 1.28-0.64 1.664-0.64 1.28-0.469333 1.621333-0.64 1.28-0.64 1.621334-0.512 1.28-0.64 1.621333-0.64 1.578667-0.64 1.28-0.469333 1.621333h-33.066667l0.64-1.578667 0.64-1.450666 0.64-1.450667 0.512-1.621333 0.426667-1.450667 0.853333-1.450667 0.64-1.450666 0.64-1.450667 0.469333-1.450667 0.64-1.621333 0.853334-1.450667 0.597333-1.450666 0.512-1.450667 0.469333-1.450667 0.64-1.450666 0.853334-1.621334 0.597333-1.450666 0.64-1.450667 0.512-1.450667 0.64-1.450666 0.64-1.450667 0.64-1.621333 0.64-1.621334 0.512-1.28 0.64-1.621333 0.810667-1.28 0.64-1.621333 0.469333-1.578667 0.469333-1.28 0.64-1.621333 0.853334-1.28 0.597333-1.621334 0.682667-1.28 0.426666-1.621333 0.682667-1.621333 0.810667-1.28 0.469333-1.621334 0.64-1.28 0.512-1.621333 0.64-1.621333 0.810667-1.28 0.64-1.621334 0.469333-1.28 0.64-1.621333 0.512-1.28 0.810667-1.621333 0.64-1.621334 0.64-1.450666 0.469333-1.450667 0.64-1.450667 0.853333-1.450666 0.597334-1.450667 0.341333-1.621333 0.64-1.450667 0.64-1.450667 0.810667-1.450666 0.64-1.450667 0.469333-1.450667 0.682667-1.621333 0.64-1.578667 0.64-1.28 0.64-1.621333 0.469333-1.28 0.64-1.621333 0.64-1.621334 0.853333-1.28 0.597334-1.621333 0.512-1.28 0.469333-1.621333 0.64-1.28 0.853333-1.621334 0.597334-1.621333 0.512-1.28 0.64-1.621333 0.64-1.28 0.810666-1.621334 0.469334-1.621333 0.469333-1.28 0.682667-1.621333z m93.525333 0.810666h33.066667l0.938666 1.28 0.853334 1.450667 0.938666 1.28 0.810667 1.450667 0.810667 1.28 0.810666 1.450666 0.768 1.28 0.981334 1.493334 0.810666 1.28 0.810667 1.28 0.810667 1.450666 0.810666 1.28 1.109334 1.450667 0.64 1.28 0.853333 1.493333 0.938667 1.28 0.981333 1.28 0.64 1.450667 0.938667 1.28 0.853333 1.450667 0.597333 1.28 1.152 1.493333 0.810667 1.28 0.810667 1.450667 0.810666 1.28 0.768 1.28 0.981334 1.450666 0.810666 1.28 0.810667 1.493334 0.810667 1.28 0.810666 1.450666 0.938667 1.28 0.853333 1.450667 0.768 1.28 0.981334-1.28 0.64-1.621333 0.981333-1.109334 0.938667-1.621333 0.853333-1.109333 0.597333-1.621334 1.152-1.152 0.810667-1.578666 0.64-1.152 0.981333-1.28 0.938667-1.621334 0.853333-1.109333 0.768-1.621333 0.810667-1.152 0.981333-1.578667 0.768-1.152 0.853334-1.621333 0.768-1.109334 0.853333-1.28 0.938667-1.621333 0.810666-1.152 0.810667-1.578667 0.938667-1.152 0.853333-1.621333 0.768-1.109333 0.981333-1.28 0.810667-1.621334 0.938667-1.152 0.853333-1.578666 0.768-1.152 0.853333-1.621334 0.938667-1.109333 0.810667-1.621333 0.810666-1.109334h33.365334v118.997334h-31.317334v-69.973334l-0.768 1.109334-0.981333 1.621333-0.810667 1.109333-0.981333 1.28-0.810667 1.621334-0.938666 1.152-0.853334 1.28-0.938666 1.621333-0.810667 1.109333-0.810667 1.28-1.109333 1.28-0.810667 1.664-0.981333 1.109334-0.810667 1.28-0.768 1.621333-0.981333 1.109333-0.810667 1.28-0.981333 1.621334-0.810667 1.152-0.938666 1.28-0.853334 1.621333-0.768 1.109333-0.981333 1.28-0.810667 1.621334-0.938666 1.152-0.981334 1.28-0.810666 1.28-0.810667 1.621333-0.981333 1.152-0.938667 1.28-0.64 1.621333-1.152 1.109334-0.810667 1.28-0.938666 1.621333-0.853334 1.152h-0.597333l-0.981333-1.450667-0.810667-1.28-0.981333-1.493333-0.810667-1.28-0.938667-1.450667-0.853333-1.28-0.938667-1.450666-0.810666-1.28-0.938667-1.450667-0.853333-1.28-1.109334-1.493333-0.64-1.28-0.981333-1.450667-0.938667-1.28-0.853333-1.450667-0.938667-1.28-0.810666-1.621333-0.938667-1.28-0.853333-1.450667-0.938667-1.28-0.810667-1.493333-0.981333-1.28-0.768-1.450667-0.981333-1.28-0.810667-1.450666-0.981333-1.28-0.810667-1.450667-0.938667-1.28-0.853333-1.493333-0.938667-1.28-0.810666-1.450667-1.109334-1.28-0.64-1.450667-0.981333-1.28v70.144h-30.933333v-117.76z m148.053333 0h93.824v26.88h-62.72v19.072h56.405334v25.301334H648.96v20.48h63.530667v26.922666h-94.506667v-117.717333z m-226.901333 36.437334l-0.64 1.621333-0.512 1.28-0.64 1.621333-0.64 1.578667-0.469333 1.450667-0.64 1.450666-0.682667 1.621334-0.64 1.621333-0.469333 1.28-0.64 1.621333-0.64 1.28-0.512 1.621334-0.64 1.621333-0.64 1.28-0.469334 1.621333-0.64 1.28-0.64 1.621334-0.682666 1.621333-0.426667 1.28-0.682667 1.621333-0.64 1.621334-0.469333 1.28-0.682667 1.621333h27.434667l-0.64-1.621333-0.512-1.450667-0.64-1.621333-0.64-1.450667-0.469333-1.450667-0.64-1.450666-0.64-1.621334-0.512-1.450666-0.64-1.450667-0.64-1.450667-0.469334-1.450666-0.64-1.621334-0.512-1.450666-0.64-1.450667-0.64-1.450667-0.469333-1.450666-0.64-1.578667-0.64-1.621333-0.512-1.28-0.64-1.621334-0.64-1.621333-0.469333-1.450667z m-49.066667 222.848h341.888l-174.506666 57.6z" p-id="7954"></path></svg>`,
+                slogan: "Deploying Unreal Engine assets..." // 部署虚幻引擎资产... (紧扣 Epic 的看家本领 Unreal Engine)
             },
             { 
                 name: "HeyBox", 
                 href: "https://www.xiaoheihe.cn/app/user/profile/34128694", 
-                
-                slogan: "Decrypting game telemetry..." 
+                svg: `<svg t="1772760221899" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5104" width="1em" height="1em" fill="currentColor"><path d="M901.12 268.288c9.216 5.12 16.384 17.408 16.384 27.648v430.08c0 10.24-7.168 22.528-16.384 27.648L771.072 829.44c-9.216 5.12-16.384 1.024-16.384-9.216V399.36c0-10.24-7.168-22.528-16.384-27.648L608.256 296.96c-9.216-5.12-16.384-1.024-16.384 9.216v106.496c0 10.24-8.192 18.432-18.432 18.432H449.536c-10.24 0-18.432-8.192-18.432-18.432V16.384c0-10.24 7.168-14.336 16.384-9.216L901.12 268.288zM431.104 611.328c0-10.24 8.192-18.432 18.432-18.432h124.928c10.24 0 18.432 8.192 18.432 18.432v396.288c0 10.24-7.168 14.336-16.384 9.216L122.88 754.688c-9.216-5.12-16.384-17.408-16.384-27.648V296.96c0-10.24 7.168-22.528 16.384-27.648L252.928 194.56c9.216-5.12 16.384-1.024 16.384 9.216V624.64c0 10.24 7.168 22.528 16.384 27.648L414.72 727.04c9.216 5.12 16.384 1.024 16.384-9.216V611.328z" p-id="5105"></path></svg>`,
+                slogan: "Fetching player telemetry & statistics..." // 获取玩家遥测与统计数据... (紧扣小黑盒查战绩、查数据的核心工具属性)
             },
             { 
                 name: "Bilibili", 
                 href: "https://space.bilibili.com/3390563", 
                 icon: "fa-brands fa-bilibili", 
-                slogan: "Decoded ACGN signals..." 
+                slogan: "Rendering danmaku overlay matrix..." // 渲染弹幕覆盖矩阵... (紧扣 B 站的灵魂：弹幕文化)
             },
-            { name: "YouTube", href: "https://www.youtube.com/@chip_0222", icon: "fa-brands fa-youtube", slogan: "Watch. Listen. Create." },
-            { name: "TikTok", href: "https://www.tiktok.com/@ch1p_0222", icon: "fa-brands fa-tiktok", slogan: "Make Your Day" },
-            { name: "Facebook", href: "https://www.facebook.com/profile.php?id=61585810324278", icon: "fa-brands fa-facebook", slogan: "Connect with friends and family" },
-            { name: "Instagram", href: "https://www.instagram.com/ch1p_0222", icon: "fa-brands fa-instagram", slogan: "Capture and share your moments" },
-            { name: "X", href: "https://x.com/ch1p_0222", icon: "fa-brands fa-x-twitter", slogan: "The everything app" },
-            { name: "Reddit", href: "https://www.reddit.com/user/chip_0222", icon: "fa-brands fa-reddit", slogan: "Dive into anything" }
+            { 
+                name: "YouTube", 
+                href: "https://www.youtube.com/@chip_0222", 
+                icon: "fa-brands fa-youtube", 
+                slogan: "Transcoding global video stream..." // 转码全球视频流... (紧扣 YouTube 庞大的视频分发和转码底层技术)
+            },
+            { 
+                name: "TikTok", 
+                href: "https://www.tiktok.com/@ch1p_0222", 
+                icon: "fa-brands fa-tiktok", 
+                slogan: "Training personalized recommendation model..." // 训练个性化推荐模型... (紧扣字节跳动最核心的“猜你喜欢”算法)
+            },
+            { 
+                name: "Facebook", 
+                href: "https://www.facebook.com/profile.php?id=61585810324278", 
+                icon: "fa-brands fa-facebook", 
+                slogan: "Mapping social graph connections..." // 映射社交图谱连接... (紧扣 Facebook 最早提出的 Social Graph 核心概念)
+            },
+            { 
+                name: "Instagram", 
+                href: "https://www.instagram.com/ch1p_0222", 
+                icon: "fa-brands fa-instagram", 
+                slogan: "Applying visual enhancement algorithms..." // 应用视觉增强算法... (紧扣 IG 靠照片滤镜起家的核心)
+            },
+            { 
+                name: "X", 
+                href: "https://x.com/ch1p_0222", 
+                icon: "fa-brands fa-x-twitter", 
+                slogan: "Routing real-time data packets..." // 路由实时数据包... (紧扣推特短平快、类似网络数据包一样高频的实时信息流)
+            },
+            { 
+                name: "Reddit", 
+                href: "https://www.reddit.com/user/chip_0222", 
+                icon: "fa-brands fa-reddit", 
+                slogan: "Aggregating sub-forum consensus data..." // 聚合子论坛共识数据... (紧扣 Reddit 的 Subreddit 机制以及 Upvote/Downvote 形成的群体共识)
+            }
         ];
+
+        function renderLinks() {
+            const container = document.getElementById('links-container');
+            container.innerHTML = '';
+            platforms.forEach((platform, index) => {
+                // 核心改动：判断如果有 svg 属性则使用 svg，否则使用 icon 类名
+                const iconContent = platform.svg 
+                    ? platform.svg 
+                    : `<i class="${platform.icon}"></i>`;
+
+                const cardHTML = `
+                    <a href="${platform.href}" target="_blank" rel="noopener noreferrer"
+                       class="link-card tilt-element cursor-target group flex items-center gap-4 bg-zinc-800 border border-zinc-700 rounded-3xl p-5 glass"
+                       style="animation-delay: ${0.1 + index * 0.1}s">
+                        <div class="icon-wrapper flex items-center justify-center text-2xl text-white">
+                            ${iconContent}
+                        </div>
+                        <div class="flex-1 min-w-0" style="transform: translateZ(10px);">
+                            <span class="text-xl font-semibold text-white block truncate">${platform.name}</span>
+                            <p class="text-zinc-400 text-xs mt-1 truncate">${platform.slogan}</p>
+                        </div>
+                        <div class="neon-text text-xl opacity-30 group-hover:opacity-100 transition-all" style="transform: translateZ(20px);">↗</div>
+                    </a>
+                `;
+                container.innerHTML += cardHTML;
+            });
+            
+            document.querySelectorAll('.link-card').forEach(card => {
+                card.addEventListener('mouseenter', playHoverSound);
+                card.addEventListener('click', playClickSound);
+            });
+        }
+
+        function initCursorHover() {
+            document.querySelectorAll('.cursor-target, a').forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+            });
+        }
+
+        function init3DTilt() {
+            document.querySelectorAll('.tilt-element').forEach(el => {
+                el.addEventListener('mouseenter', () => { tiltState.active = true; tiltState.element = el; tiltState.rect = el.getBoundingClientRect(); });
+                el.addEventListener('mouseleave', () => { tiltState.active = false; tiltState.element = null; el.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`; });
+            });
+            window.addEventListener('scroll', () => { if(tiltState.active && tiltState.element) tiltState.rect = tiltState.element.getBoundingClientRect(); }, { passive: true });
+        }
+
+        let keyBufferMatrix = '';
+        window.addEventListener('keydown', (e) => {
+            keyBufferMatrix += e.key.toLowerCase();
+            if (keyBufferMatrix.length > 10) keyBufferMatrix = keyBufferMatrix.slice(-10);
+            if (keyBufferMatrix.includes('matrix')) {
+                const canvas = document.getElementById('matrix-canvas');
+                canvas.style.opacity = '1'; 
+                const ctx = canvas.getContext('2d', { alpha: false }); 
+                canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+                const chars = '0123456789ABCDEF'.split('');
+                const fontSize = 16;
+                const drops = new Array(Math.floor(canvas.width / fontSize)).fill(1);
+                
+                ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                setInterval(() => {
+                    ctx.fillStyle = 'rgba(5, 5, 5, 0.08)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--neon').trim();
+                    ctx.font = `${fontSize}px monospace`;
+                    for(let i = 0; i < drops.length; i++) {
+                        ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, drops[i] * fontSize);
+                        if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                        drops[i]++;
+                    }
+                }, 33);
+                keyBufferMatrix = ''; 
+            }
+        });
+
+        async function runBootSequence() {
+            const container = document.getElementById('boot-text-container');
+            const bootScreen = document.getElementById('boot-screen');
+            const mainContent = document.getElementById('main-content');
+            
+            const lines = [
+                "root@chip-server:~# ./init_sequence.sh",
+                "Establishing secure tunnel...",
+                "Verifying core stability... [OK]",
+                "Syncing node telemetry... [OK]",
+                "Loading user profile: CHIP...",
+                ">_ ACCESS GRANTED. Welcome back."
+            ];
+
+            for (let i = 0; i < lines.length; i++) {
+                const lineDiv = document.createElement('div');
+                lineDiv.textContent = lines[i];
+                container.appendChild(lineDiv);
+                await new Promise(resolve => setTimeout(resolve, Math.random() * 50 + 50)); 
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 200));
+            bootScreen.style.opacity = '0';
+            mainContent.style.opacity = '1';
+            
+            setTimeout(() => {
+                bootScreen.remove();
+                init3DTilt(); 
+                initCursorHover();
+                initNodeNetwork(); 
+                initRealTelemetry();
+                initTypewriter(); 
+                updateHUD(); 
+                startRenderLoop(); 
+            }, 600);
+        }
+
+        window.onload = () => {
+            renderLinks(); updateClock();
+            setTimeout(runBootSequence, 100); 
+        };
+    </script>
+</body>
+</html>
