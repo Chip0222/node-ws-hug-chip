@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>Chip</title>
-    <meta name="description" content=">_ 系统在线 | 赛博漫游者 | 正在同步数字宇宙...">
-    <meta property="og:title" content="Chip 的数字宇宙入口">
-    <meta property="og:description" content=">_ 系统在线 | 赛博漫游者 | 正在同步数字宇宙...">
+    <meta name="description" content=">_ SYS_ONLINE | CYBER_NOMAD | SYNCING_DIGITAL_UNIVERSE...">
+    <meta property="og:title" content="Chip's Digital Universe">
+    <meta property="og:description" content=">_ SYS_ONLINE | CYBER_NOMAD | SYNCING_DIGITAL_UNIVERSE...">
     
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMGYxNzJhIi8+PHRleHQgeD0iNTAiIHk9IjcwIiBmb250LXNpemU9IjcwIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzAwZmY5ZCI+QzwvdGV4dD48L3N2Zz4=">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,7 +64,6 @@
             will-change: transform;
         }
 
-        /* 优化 1：Bento 智能便当盒布局 - 首个卡片霸占整行 */
         .bento-grid {
             display: grid;
             grid-template-columns: repeat(1, 1fr);
@@ -74,7 +73,6 @@
             .bento-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            /* 黑科技：当卡片总数为奇数时，第一个卡片横跨两列 */
             .bento-grid .link-card:first-child:nth-last-child(odd) {
                 grid-column: 1 / -1;
             }
@@ -177,6 +175,21 @@
     <div id="cursor-outline" class="hidden lg:block"></div>
     <div class="overclock-alert"></div>
 
+    <div class="fixed top-6 right-6 z-50 group">
+        <button class="glass px-4 py-2 rounded-xl border border-zinc-700 text-xs font-mono text-zinc-400 hover:text-[var(--neon)] hover:border-[var(--neon)] transition-all cursor-target flex items-center gap-2">
+            <i class="fa-solid fa-globe"></i> [<span id="lang-label"> EN </span>]
+        </button>
+        <div class="absolute right-0 mt-2 w-32 glass border border-zinc-700 rounded-xl overflow-hidden opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100 flex flex-col shadow-2xl">
+            <button onclick="setLanguage('en')" class="px-4 py-2 text-xs font-mono text-zinc-400 hover:text-[var(--neon)] hover:bg-zinc-800/50 text-left cursor-target">English</button>
+            <button onclick="setLanguage('zh')" class="px-4 py-2 text-xs font-mono text-zinc-400 hover:text-[var(--neon)] hover:bg-zinc-800/50 text-left cursor-target">简体中文</button>
+            <button onclick="setLanguage('de')" class="px-4 py-2 text-xs font-mono text-zinc-400 hover:text-[var(--neon)] hover:bg-zinc-800/50 text-left cursor-target">Deutsch</button>
+            <button onclick="setLanguage('es')" class="px-4 py-2 text-xs font-mono text-zinc-400 hover:text-[var(--neon)] hover:bg-zinc-800/50 text-left cursor-target">Español</button>
+            <button onclick="setLanguage('fr')" class="px-4 py-2 text-xs font-mono text-zinc-400 hover:text-[var(--neon)] hover:bg-zinc-800/50 text-left cursor-target">Français</button>
+            <button onclick="setLanguage('ja')" class="px-4 py-2 text-xs font-mono text-zinc-400 hover:text-[var(--neon)] hover:bg-zinc-800/50 text-left cursor-target">日本語</button>
+            <button onclick="setLanguage('ru')" class="px-4 py-2 text-xs font-mono text-zinc-400 hover:text-[var(--neon)] hover:bg-zinc-800/50 text-left cursor-target">Русский</button>
+        </div>
+    </div>
+
     <div id="cli-terminal">
         <div id="cli-output">CHIP_OS [Version 1.0.5]
 (c) 2026 Chip Corporation. All rights reserved.
@@ -235,7 +248,7 @@ Type 'help' to see available commands.
 
                     <div class="mt-12 inline-flex items-center gap-3 px-8 py-3 rounded-3xl glass border cursor-target" onclick="document.dispatchEvent(new KeyboardEvent('keydown', {'key': '~'}))">
                         <div class="w-2 h-2 rounded-full animate-pulse" style="background-color: var(--neon);"></div>
-                        <span class="text-sm font-medium tracking-widest text-zinc-400 hover:text-white transition-colors">我的数字宇宙入口</span>
+                        <span id="portal-btn-text" class="text-sm font-medium tracking-widest text-zinc-400 hover:text-white transition-colors">ENTER_DIGITAL_UNIVERSE</span>
                     </div>
                 </div>
             </div>
@@ -252,9 +265,51 @@ Type 'help' to see available commands.
         </div>
     </div>
     
-
     <script>
         document.getElementById('footer-year').textContent = new Date().getFullYear();
+        
+        // ==================== 多语言字典与状态 ====================
+        const i18n = {
+            en: {
+                name: "EN",
+                typewriter: ">_ SYS_ONLINE | CYBER_NOMAD | SYNCING_DIGITAL_UNIVERSE...",
+                portalBtn: "ENTER_DIGITAL_UNIVERSE"
+            },
+            zh: {
+                name: "ZH",
+                typewriter: ">_ 系统在线 | 赛博漫游者 | 正在同步数字宇宙...",
+                portalBtn: "我的数字宇宙入口"
+            },
+            de: {
+                name: "DE",
+                typewriter: ">_ SYS_ONLINE | CYBER_NOMADE | SYNCHRONISIERE_DIGITALES_UNIVERSUM...",
+                portalBtn: "DIGITALES_UNIVERSUM_BETRETEN"
+            },
+            es: {
+                name: "ES",
+                typewriter: ">_ SIS_EN_LÍNEA | NÓMADA_CIBERNÉTICO | SINCRONIZANDO_UNIVERSO_DIGITAL...",
+                portalBtn: "ENTRAR_AL_UNIVERSO_DIGITAL"
+            },
+            fr: {
+                name: "FR",
+                typewriter: ">_ SYS_EN_LIGNE | NOMADE_CYBER | SYNCHRONISATION_UNIVERS_NUMÉRIQUE...",
+                portalBtn: "ENTRER_DANS_L_UNIVERS_NUMÉRIQUE"
+            },
+            ja: {
+                name: "JA",
+                typewriter: ">_ システムオンライン | サイバーノマド | デジタルユニバース同期中...",
+                portalBtn: "デジタルユニバースへ入る"
+            },
+            ru: {
+                name: "RU",
+                typewriter: ">_ СИСТЕМА_ОНЛАЙН | КИБЕР_КОЧЕВНИК | СИНХРОНИЗАЦИЯ_ЦИФРОВОЙ_ВСЕЛЕННОЙ...",
+                portalBtn: "ВОЙТИ_В_ЦИФРОВУЮ_ВСЕЛЕННУЮ"
+            }
+        };
+
+        // 默认首选项设为英文
+        let currentLang = 'en';
+
         // ==================== 全局状态 ====================
         const pointer = { x: -1000, y: -1000, targetX: -1000, targetY: -1000 };
         const tiltState = { active: false, element: null, rect: null };
@@ -312,8 +367,10 @@ Type 'help' to see available commands.
         }
 
         // ==================== 打字机 ====================
+        let typewriterTimeout;
         function initTypewriter() {
-            const text = ">_ 系统在线 | 赛博漫游者 | 正在同步数字宇宙...";
+            clearTimeout(typewriterTimeout);
+            const text = i18n[currentLang].typewriter;
             const container = document.getElementById('typewriter-slogan');
             container.innerHTML = '';
             let i = 0;
@@ -321,12 +378,12 @@ Type 'help' to see available commands.
                 if (i < text.length) {
                     container.innerHTML = text.substring(0, i + 1) + '<span class="opacity-50">█</span>';
                     i++;
-                    setTimeout(typeChar, 40 + Math.random() * 40);
+                    typewriterTimeout = setTimeout(typeChar, 40 + Math.random() * 40);
                 } else {
                     container.innerHTML = text + '<span class="animate-pulse opacity-50 ml-1">_</span>';
                 }
             }
-            setTimeout(typeChar, 500); 
+            typewriterTimeout = setTimeout(typeChar, 500); 
         }
 
         // ==================== 隐藏终端 ====================
@@ -424,7 +481,7 @@ Ping statistics: 3 packets transmitted, 3 received, 0% packet loss.`);
         // ==================== 真实数据遥测与时钟 ====================
         const originalTitle = document.title;
         document.addEventListener('visibilitychange', () => {
-            document.title = document.hidden ? '[ 信号丢失... ] 待机中' : originalTitle;
+            document.title = document.hidden ? '[ SIGNAL LOST ] STANDBY...' : originalTitle;
         });
 
         const startTime = Date.now();
@@ -590,67 +647,155 @@ Ping statistics: 3 packets transmitted, 3 received, 0% packet loss.`);
                 name: "GitHub", 
                 href: "https://github.com/Chip0222", 
                 icon: "fa-brands fa-github", 
-                slogan: "Executing version control protocols..." // 执行版本控制协议... (紧扣 Git 核心功能)
+                slogan: { 
+                    en: "Executing version control protocols...",
+                    zh: "正在执行版本控制协议...",
+                    de: "Führe Versionskontrollprotokolle aus...",
+                    es: "Ejecutando protocolos de control de versiones...",
+                    fr: "Exécution des protocoles de contrôle de version...",
+                    ja: "バージョン管理プロトコルを実行中...",
+                    ru: "Выполнение протоколов контроля версий..."
+                }
             },
             { 
                 name: "Steam", 
                 href: "https://steamcommunity.com/profiles/76561198181614733", 
                 icon: "fa-brands fa-steam", 
-                slogan: "Initializing Steamworks API & matchmaking..." // 初始化 Steamworks API 与匹配系统... (紧扣 Steam 游戏底层支持和联机功能)
+                slogan: { 
+                    en: "Initializing Steamworks API & matchmaking...",
+                    zh: "初始化 Steamworks API 与匹配系统...",
+                    de: "Initialisiere Steamworks API & Matchmaking...",
+                    es: "Inicializando API de Steamworks y emparejamiento...",
+                    fr: "Initialisation de l'API Steamworks et du matchmaking...",
+                    ja: "Steamworks APIとマッチメイキングを初期化中...",
+                    ru: "Инициализация Steamworks API и подбора игроков..."
+                }
             },
             { 
                 name: "Epic Games", 
                 href: "https://launcher.store.epicgames.com/u/35fadb597702450590c008c2ed79bdff", 
                 svg: `<svg t="1772760300695" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7953" width="1em" height="1em" fill="currentColor"><path d="M150.954667 0C92.416 0 70.826667 21.589333 70.826667 80.128v706.773333c0 6.613333 0.298667 12.757333 0.810666 18.389334 1.450667 12.885333 1.578667 25.301333 13.525334 39.338666 1.109333 1.621333 13.226667 10.496 13.226666 10.496 6.442667 3.242667 10.965333 5.461333 18.346667 8.533334l355.584 148.992c18.389333 8.405333 26.154667 11.776 39.509333 11.306666H512c13.525333 0.469333 21.290667-2.901333 39.68-11.306666l355.541333-148.992c7.424-3.072 11.776-5.290667 18.389334-8.533334 0 0 12.117333-9.045333 13.226666-10.496 11.946667-14.037333 12.074667-26.453333 13.525334-39.338666 0.512-5.632 0.853333-11.776 0.853333-18.346667V80.085333C953.173333 21.589333 931.541333 0 873.002667 0z m569.856 132.693333h29.013333c48.384 0 71.936 23.552 71.936 72.405334v80.170666h-58.538667V208.341333c0-15.658667-7.253333-22.912-22.4-22.912h-9.984c-15.658667 0-22.912 7.253333-22.912 22.912v248.021334c0 15.616 7.253333 22.869333 22.912 22.869333h11.093334c15.018667 0 22.272-7.253333 22.272-22.869333v-88.746667h58.709333v91.477333c0 48.853333-24.064 72.874667-72.576 72.874667h-29.525333c-48.682667 0-72.533333-24.192-72.533334-72.874667V205.610667c0-48.725333 23.850667-72.917333 72.533334-72.917334z m-520.021334 3.242667H333.653333v54.485333H260.437333v111.104h70.485334v54.357334H260.437333v118.357333h74.197334v54.357333H200.789333z m162.858667 0h93.696c48.512 0 72.533333 24.192 72.533333 73.045333v104.32c0 48.853333-24.021333 72.917333-72.533333 72.917334h-33.877333v142.378666H363.648z m193.194667 0h59.648v392.661333h-59.648z m-133.546667 52.906667v144.64h24.704c14.976 0 22.229333-7.253333 22.229333-23.04v-98.56c0-15.786667-7.253333-23.04-22.229333-23.04zM258.816 622.08h8.874667l1.962666 0.298667h3.2l1.621334 0.512h1.621333l1.621333 0.469333 1.578667 0.341333 1.450667 0.298667 1.450666 0.341333 1.450667 0.298667 1.621333 0.512 1.28 0.298667 1.28 0.512 1.621334 0.469333 1.28 0.64 1.664 0.64 1.450666 0.64 1.28 0.853333 1.621334 0.597334 1.109333 0.853333 1.621333 0.768 1.28 0.853333 1.450667 0.768 1.28 0.981334 1.28 0.810666 1.28 0.938667 1.322667 0.981333 1.28 1.109334 1.28 0.981333-0.938667 1.28-1.152 1.152-0.938667 1.28-1.152 1.28-0.938666 1.152-0.981334 1.109333-1.152 1.28-0.938666 1.28-0.981334 1.152-1.109333 1.28-0.981333 1.28-1.152 1.28-0.938667 1.152-0.981333 1.28-1.109334 1.28-0.981333 1.322667-1.109333 1.109333-0.981334 1.28-1.28-0.938666-1.28-1.109334-1.28-0.853333-1.493333-0.938667-1.109333-0.810666-1.450667-0.810667-1.28-0.810667-1.493333-0.810666-1.28-0.64-1.28-0.64-1.28-0.469334-1.450667-0.512-1.621333-0.426666-1.28-0.341334-1.621334-0.341333-1.621333-0.341333-1.621333-0.128h-1.749334l-1.962666-0.341334h-3.2l-1.621334 0.170667h-1.621333l-1.621333 0.469333-1.450667 0.341334-1.450667 0.469333-1.578666 0.469333-1.28 0.64-1.621334 0.682667-1.152 0.768-1.28 0.853333-1.28 0.768-1.152 0.981334-1.109333 0.981333-1.152 0.938667-0.938667 1.152-1.28 1.109333-0.853333 1.28-0.768 1.152-0.981333 1.28-0.64 1.450667-0.853334 1.28-0.768 1.450666-0.469333 1.450667-0.682667 1.450667-0.426666 1.621333-0.213334 1.621333-0.469333 1.450667-0.341333 1.792v1.578667l-0.298667 1.621333v3.84l0.170667 1.664 0.128 1.450667 0.170666 1.578666 0.341334 1.621334 0.469333 1.28 0.170667 1.621333 0.469333 1.28 0.512 1.28 0.64 1.664 0.810667 1.578667 0.64 1.28 0.810666 1.28 0.938667 1.322666 0.981333 1.28 0.810667 1.152 1.28 1.109334 0.981333 1.152 1.109334 0.938666 1.28 0.981334 1.28 0.981333 1.322666 0.810667 1.28 0.768 1.450667 0.682666 1.621333 0.64 1.28 0.64 1.621334 0.469334 1.621333 0.512 1.621333 0.298666 1.578667 0.341334 1.621333 0.170666 1.962667 0.128h5.290667l1.962666-0.298666h1.578667l1.621333-0.512 1.621334-0.298667 1.621333-0.512 1.450667-0.298667 1.450666-0.64 1.28-0.64 1.621334-0.682666 0.981333-0.64 1.28-0.810667v-14.805333h-23.552v-23.893334h53.205333v53.248l-1.109333 0.938667-1.28 0.981333-1.152 0.810667-1.28 0.981333-1.28 0.768-1.28 0.981334-1.28 0.810666-1.322667 0.810667-1.621333 0.810667-1.450667 0.810666-1.28 0.810667-1.621333 0.64-1.28 0.810667-1.621333 0.64-1.621334 0.64-1.621333 0.64-1.450667 0.64-1.450666 0.469333-1.450667 0.512-1.578667 0.469333-1.450666 0.469334-1.621334 0.512-1.450666 0.298666-1.621334 0.341334-1.621333 0.341333-1.621333 0.298667-1.578667 0.170666-1.621333 0.170667-1.621334 0.170667-1.92 0.128-1.621333 0.170666-1.792 0.170667h-8.362667l-1.792-0.341333h-1.621333l-1.578667-0.298667h-1.621333l-1.621333-0.512-1.621334-0.298667-1.621333-0.341333-1.578667-0.298667-1.28-0.512-1.621333-0.298666-1.621333-0.512-1.450667-0.64-1.450667-0.469334-1.621333-0.64-1.450667-0.64-1.621333-0.64-1.28-0.682666-1.621333-0.768-1.109334-0.853334-1.621333-0.768-1.152-0.853333-1.28-0.768-1.28-0.981333-1.28-0.981334-1.450667-0.938666-0.981333-0.981334-1.28-0.981333-1.152-1.109333-1.109333-0.981334-1.152-1.109333-0.938667-1.152-1.152-1.109333-0.938667-1.28-0.981333-1.152-0.810667-1.28-0.981333-1.28-0.810667-1.28-0.768-1.28-0.853333-1.493334-0.768-1.28-0.64-1.450666-0.64-1.450667-0.682667-1.450667-0.64-1.450666-0.469333-1.28-0.64-1.450667-0.341333-1.450667-0.469334-1.450666-0.341333-1.621334-0.469333-1.450666-0.341334-1.621334-0.128-1.450666-0.341333-1.621334-0.170667-1.450666-0.128-1.621334-0.170666-1.578666-0.170667-1.621334v-8.874666l0.341333-1.621334v-1.749333l0.426667-1.621333v-1.621334l0.512-1.621333 0.512-1.578667 0.298667-1.621333 0.469333-1.450667 0.512-1.621333 0.469333-1.450667 0.64-1.621333 0.64-1.450667 0.682667-1.450666 0.64-1.450667 0.64-1.450667 0.810667-1.450666 0.810666-1.28 0.768-1.28 0.853334-1.28 0.768-1.28 0.981333-1.322667 0.981333-1.28 0.938667-1.28 1.152-1.152 0.938667-1.109333 0.981333-1.152 1.28-1.109334 0.981333-1.152 1.28-0.981333 1.152-1.109333 1.28-0.981334 1.28-0.938666 1.28-0.853334 1.28-0.938666 1.28-0.810667 1.322667-0.810667 1.450667-0.810666 1.621333-0.810667 1.28-0.768 1.621333-0.682667 1.450667-0.64 1.621333-0.810666 1.28-0.426667 1.621334-0.512 1.450666-0.64 1.450667-0.341333 1.450667-0.469334 1.621333-0.341333 1.450667-0.469333 1.578666-0.341334h1.621334l1.621333-0.469333h1.621333l1.621334-0.341333h1.578666z m511.530667 0.298667h8.832l1.962666 0.341333h3.2l1.621334 0.469333h1.92l1.621333 0.512 1.450667 0.298667 1.621333 0.341333 1.621333 0.298667 1.450667 0.341333 1.621333 0.469334 1.578667 0.512 1.28 0.298666 1.621333 0.64 1.621334 0.512 1.28 0.64 1.621333 0.64 1.621333 0.64 1.450667 0.853334 1.152 0.597333 1.578667 0.853333 1.450666 0.768 1.28 0.810667 1.493334 0.981333 1.28 0.768 1.28 0.981334 1.28 0.981333 1.28 0.938667-0.938667 1.28-0.810667 1.322666-0.981333 1.28-0.938667 1.28-0.981333 1.450667-0.810667 1.28-0.981333 1.28-0.938667 1.322667-0.853333 1.28-0.938667 1.28-0.981333 1.28-0.938667 1.322666-0.853333 1.450667-0.938667 1.28-1.109333 1.28-0.853333 1.28-0.938667 1.322667-1.28-0.981334-1.450667-0.810666-1.28-0.768-1.28-0.981334-1.493333-0.64-1.28-0.853333-1.621333-0.597333-1.109334-0.64-1.621333-0.682667-1.28-0.64-1.28-0.469333-1.450667-0.64-1.621333-0.469334-1.621333-0.512-1.621334-0.469333-1.749333-0.341333-1.621333-0.298667-1.621334-0.341333-1.621333-0.170667-1.578667-0.170667-1.450666-0.128h-3.584l-1.749334 0.298667-1.621333 0.341333-1.621333 0.298667-1.28 0.682667-1.109334 0.64-1.450666 1.28-0.981334 1.450666-0.64 1.450667v4.010667l0.810667 1.792 0.64 0.981333 1.109333 1.109333 1.621334 0.853334 1.28 0.768 1.621333 0.64 1.621333 0.64 2.090667 0.64 1.28 0.341333 1.28 0.469333 1.621333 0.341334 1.28 0.469333 1.621334 0.341333 1.792 0.469334 1.749333 0.469333 1.792 0.512 1.792 0.298667 1.578667 0.512 1.792 0.469333 1.621333 0.341333 1.578667 0.469334 1.621333 0.469333 1.621333 0.512 1.621334 0.469333 1.450666 0.469334 1.621334 0.512 1.578666 0.64 1.621334 0.810666 1.621333 0.64 1.621333 0.810667 1.621334 0.810667 1.28 0.810666 1.28 0.768 1.450666 0.981334 1.152 0.853333 1.450667 1.109333 1.109333 1.109334 1.28 1.28 1.152 1.152 0.810667 1.28 1.109333 1.621333 0.810667 1.109333 0.64 1.621334 0.810667 1.109333 0.469333 1.621333 0.512 1.28 0.298667 1.621334 0.341333 1.621333 0.298667 1.621333 0.170666 1.621334 0.170667 1.578666v4.053334l-0.170667 1.749333-0.170666 1.621333-0.128 1.792-0.341334 1.621334-0.469333 1.578666-0.341333 1.621334-0.469334 1.621333-0.64 1.450667-0.64 1.28-0.682666 1.450666-0.768 1.28-0.981334 1.28-0.853333 1.28-0.768 1.322667-1.109333 1.152-0.981334 1.109333-1.152 0.981334-1.28 1.109333-1.109333 0.981333-1.28 0.981334-1.28 0.768-1.322667 0.981333-1.621333 0.810667-1.28 0.64-1.621333 0.853333-1.621334 0.597333-1.578666 0.64-1.621334 0.512-1.621333 0.469334-1.28 0.469333-1.621333 0.341333-1.621334 0.341334-1.28 0.298666-1.621333 0.341334h-1.621333l-1.578667 0.298666h-1.621333l-1.621334 0.341334h-11.946666l-1.578667-0.170667-1.621333-0.170667-1.792-0.128-1.621334-0.341333-1.578666-0.170667-1.621334-0.298666-1.621333-0.341334-1.792-0.469333-1.578667-0.341333-1.621333-0.469334-1.621333-0.341333-1.621334-0.469333-1.578666-0.512-1.621334-0.64-1.450666-0.469334-1.621334-0.469333-1.621333-0.682667-1.28-0.64-1.621333-0.64-1.28-0.810666-1.621334-0.64-1.450666-0.810667-1.109334-0.810667-1.621333-0.810666-1.152-0.768-1.450667-0.853334-1.28-0.938666-1.28-0.981334-1.28-0.938666-1.28-0.981334-1.152-0.981333-1.28-1.109333 0.938667-1.28 1.152-1.152 0.981333-1.28 1.109334-1.28 0.981333-1.152 0.938667-1.28 1.152-1.28 0.981333-1.152 1.109333-1.28 0.981334-1.109334 1.109333-1.28 0.981333-1.28 0.938667-1.152 1.152-1.28 0.981333-1.28 1.109334-1.152 1.152-1.28 1.109333 0.938667 1.621333 0.981333 1.109334 0.981334 1.621333 0.938666 1.28 0.853334 1.450667 0.938666 1.28 0.810667 1.493333 0.64 1.28 0.810667 1.450667 0.64 1.621333 0.64 1.28 0.64 1.621333 0.469333 1.28 0.682667 1.621334 0.426666 1.578666 0.512 1.621334 0.512 1.621333 0.298667 1.621333 0.341333 1.621334 0.298667h1.749333l1.621333 0.512h8.874667l1.621333-0.341333 1.578667-0.341334 1.28-0.298666 1.28-0.469334 1.152-0.682666 1.450667-0.938667 0.853333-1.152 0.768-1.28 0.469333-1.621333v-3.712l-0.64-1.578667-0.938666-1.28-0.981334-0.981333-1.450666-0.981334-1.152-0.64-1.578667-0.64-1.621333-0.64-1.92-0.853333-1.152-0.298667-1.28-0.341333-1.621334-0.426667-1.28-0.341333-1.621333-0.512-1.621333-0.298667-1.749334-0.512-1.621333-0.298666-1.792-0.512-1.578667-0.298667-1.621333-0.512-1.621333-0.298667-1.621334-0.512-1.621333-0.426666-1.578667-0.341334-1.450666-0.512-1.450667-0.469333-1.450667-0.512-1.621333-0.64-1.792-0.64-1.621333-0.64-1.578667-0.64-1.621333-0.810667-1.621334-0.810666-1.109333-0.810667-1.621333-0.810667-1.152-0.938666-1.450667-0.853334-0.938667-0.938666-1.152-1.109334-1.28-1.152-0.981333-1.109333-0.938667-1.152-0.853333-1.109333-0.768-1.28-0.853333-1.450667-0.597334-1.152-0.512-1.28-0.469333-1.450667-0.469333-1.28-0.341334-1.621333-0.298666-1.450667v-1.621333l-0.341334-1.621333v-6.912l0.170667-1.621334 0.170667-1.621333 0.298666-1.28 0.341334-1.621333 0.469333-1.28 0.341333-1.621334 0.64-1.28 0.64-1.621333 0.64-1.28 0.810667-1.621333 0.810667-1.28 1.109333-1.28 0.853333-1.28 1.28-1.28 1.109334-1.152 0.981333-1.28 1.450667-1.152 0.938666-0.810667 1.450667-0.981333 1.28-0.938667 1.28-0.853333 1.621333-0.768 1.28-0.64 1.664-0.810667 1.28-0.64 1.621334-0.512 1.578666-0.64 1.621334-0.469333 1.152-0.341334 1.578666-0.298666 1.28-0.341334 1.621334-0.298666 1.621333-0.341334 1.621333-0.170666 1.621334-0.170667 1.621333-0.128z m-394.112 1.152h30.165333l0.64 1.450666 0.64 1.450667 0.64 1.450667 0.469333 1.621333 0.64 1.450667 0.64 1.450666 0.682667 1.450667 0.64 1.450667 0.469333 1.450666 0.810667 1.578667 0.64 1.450667 0.64 1.493333 0.341333 1.450667 0.64 1.450666 0.810667 1.450667 0.64 1.578667 0.64 1.450666 0.469333 1.450667 0.64 1.450667 0.853334 1.450666 0.426666 1.450667 0.682667 1.621333 0.469333 1.621334 0.64 1.28 0.853334 1.621333 0.597333 1.28 0.64 1.621333 0.512 1.621334 0.469333 1.28 0.810667 1.621333 0.64 1.28 0.64 1.621333 0.469333 1.28 0.682667 1.621334 0.810667 1.621333 0.64 1.450667 0.469333 1.450666 0.469333 1.450667 0.64 1.450667 0.853334 1.450666 0.597333 1.578667 0.682667 1.493333 0.426666 1.450667 0.682667 1.450667 0.64 1.450666 0.64 1.450667 0.64 1.578667 0.512 1.450666 0.64 1.450667 0.810667 1.450667 0.64 1.450666 0.64 1.450667 0.341333 1.621333 0.64 1.450667 0.810667 1.450667 0.64 1.450666 0.469333 1.450667 0.64 1.450667 0.64 1.621333 0.853333 1.621333 0.426667 1.28 0.682667 1.621334 0.469333 1.28 0.64 1.621333 0.810667 1.621333 0.64 1.28 0.469333 1.621334 0.682667 1.28 0.469333 1.621333 0.810667 1.28 0.64 1.621333 0.469333 1.621334 0.64 1.28 0.682667 1.621333 0.768 1.28 0.682666 1.621333 0.426667 1.578667 0.512 1.28 0.64 1.621333 0.853333 1.28h-33.408l-0.853333-1.408-0.426667-1.450666-0.682666-1.450667-0.64-1.621333-0.469334-1.450667-0.64-1.450667-0.64-1.450666-0.512-1.450667-0.64-1.450667-0.64-1.450666-0.469333-1.450667-0.64-1.621333-0.64-1.450667-0.512-1.450667-0.64-1.450666H367.658667l-0.64 1.621333-0.469334 1.28-0.64 1.621333-0.810666 1.578667-0.341334 1.28-0.64 1.664-0.64 1.28-0.469333 1.621333-0.64 1.28-0.64 1.621334-0.512 1.28-0.64 1.621333-0.64 1.578667-0.64 1.28-0.469333 1.621333h-33.066667l0.64-1.578667 0.64-1.450666 0.64-1.450667 0.512-1.621333 0.426667-1.450667 0.853333-1.450667 0.64-1.450666 0.64-1.450667 0.469333-1.450667 0.64-1.621333 0.853334-1.450667 0.597333-1.450666 0.512-1.450667 0.469333-1.450667 0.64-1.450666 0.853334-1.621334 0.597333-1.450666 0.64-1.450667 0.512-1.450667 0.64-1.450666 0.64-1.450667 0.64-1.621333 0.64-1.621334 0.512-1.28 0.64-1.621333 0.810667-1.28 0.64-1.621333 0.469333-1.578667 0.469333-1.28 0.64-1.621333 0.853334-1.28 0.597333-1.621334 0.682667-1.28 0.426666-1.621333 0.682667-1.621333 0.810667-1.28 0.469333-1.621334 0.64-1.28 0.512-1.621333 0.64-1.621333 0.810667-1.28 0.64-1.621334 0.469333-1.28 0.64-1.621333 0.512-1.28 0.810667-1.621333 0.64-1.621334 0.64-1.450666 0.469333-1.450667 0.64-1.450667 0.853333-1.450666 0.597334-1.450667 0.341333-1.621333 0.64-1.450667 0.64-1.450667 0.810667-1.450666 0.64-1.450667 0.469333-1.450667 0.682667-1.621333 0.64-1.578667 0.64-1.28 0.64-1.621333 0.469333-1.28 0.64-1.621333 0.64-1.621334 0.853333-1.28 0.597334-1.621333 0.512-1.28 0.469333-1.621333 0.64-1.28 0.853333-1.621334 0.597334-1.621333 0.512-1.28 0.64-1.621333 0.64-1.28 0.810666-1.621334 0.469334-1.621333 0.469333-1.28 0.682667-1.621333z m93.525333 0.810666h33.066667l0.938666 1.28 0.853334 1.450667 0.938666 1.28 0.810667 1.450667 0.810667 1.28 0.810666 1.450666 0.768 1.28 0.981334 1.493334 0.810666 1.28 0.810667 1.28 0.810667 1.450666 0.810666 1.28 1.109334 1.450667 0.64 1.28 0.853333 1.493333 0.938667 1.28 0.981333 1.28 0.64 1.450667 0.938667 1.28 0.853333 1.450667 0.597333 1.28 1.152 1.493333 0.810667 1.28 0.810667 1.450667 0.810666 1.28 0.768 1.28 0.981334 1.450666 0.810666 1.28 0.810667 1.493334 0.810667 1.28 0.810666 1.450666 0.938667 1.28 0.853333 1.450667 0.768 1.28 0.981334-1.28 0.64-1.621333 0.981333-1.109334 0.938667-1.621333 0.853333-1.109333 0.597333-1.621334 1.152-1.152 0.810667-1.578666 0.64-1.152 0.981333-1.28 0.938667-1.621334 0.853333-1.109333 0.768-1.621333 0.810667-1.152 0.981333-1.578667 0.768-1.152 0.853334-1.621333 0.768-1.109334 0.853333-1.28 0.938667-1.621333 0.810666-1.152 0.810667-1.578667 0.938667-1.152 0.853333-1.621333 0.768-1.109333 0.981333-1.28 0.810667-1.621334 0.938667-1.152 0.853333-1.578666 0.768-1.152 0.853333-1.621334 0.938667-1.109333 0.810667-1.621333 0.810666-1.109334h33.365334v118.997334h-31.317334v-69.973334l-0.768 1.109334-0.981333 1.621333-0.810667 1.109333-0.981333 1.28-0.810667 1.621334-0.938666 1.152-0.853334 1.28-0.938666 1.621333-0.810667 1.109333-0.810667 1.28-1.109333 1.28-0.810667 1.664-0.981333 1.109334-0.810667 1.28-0.768 1.621333-0.981333 1.109333-0.810667 1.28-0.981333 1.621334-0.810667 1.152-0.938666 1.28-0.853334 1.621333-0.768 1.109333-0.981333 1.28-0.810667 1.621334-0.938666 1.152-0.981334 1.28-0.810666 1.28-0.810667 1.621333-0.981333 1.152-0.938667 1.28-0.64 1.621333-1.152 1.109334-0.810667 1.28-0.938666 1.621333-0.853334 1.152h-0.597333l-0.981333-1.450667-0.810667-1.28-0.981333-1.493333-0.810667-1.28-0.938667-1.450667-0.853333-1.28-0.938667-1.450666-0.810666-1.28-0.938667-1.450667-0.853333-1.28-1.109334-1.493333-0.64-1.28-0.981333-1.450667-0.938667-1.28-0.853333-1.450667-0.938667-1.28-0.810666-1.621333-0.938667-1.28-0.853333-1.450667-0.938667-1.28-0.810667-1.493333-0.981333-1.28-0.768-1.450667-0.981333-1.28-0.810667-1.450666-0.981333-1.28-0.810667-1.450667-0.938667-1.28-0.853333-1.493333-0.938667-1.28-0.810666-1.450667-1.109334-1.28-0.64-1.450667-0.981333-1.28v70.144h-30.933333v-117.76z m148.053333 0h93.824v26.88h-62.72v19.072h56.405334v25.301334H648.96v20.48h63.530667v26.922666h-94.506667v-117.717333z m-226.901333 36.437334l-0.64 1.621333-0.512 1.28-0.64 1.621333-0.64 1.578667-0.469333 1.450667-0.64 1.450666-0.682667 1.621334-0.64 1.621333-0.469333 1.28-0.64 1.621333-0.64 1.28-0.512 1.621334-0.64 1.621333-0.64 1.28-0.469334 1.621333-0.64 1.28-0.64 1.621334-0.682666 1.621333-0.426667 1.28-0.682667 1.621333-0.64 1.621334-0.469333 1.28-0.682667 1.621333h27.434667l-0.64-1.621333-0.512-1.450667-0.64-1.621333-0.64-1.450667-0.469333-1.450667-0.64-1.450666-0.64-1.621334-0.512-1.450666-0.64-1.450667-0.64-1.450667-0.469334-1.450666-0.64-1.621334-0.512-1.450666-0.64-1.450667-0.64-1.450667-0.469333-1.450666-0.64-1.578667-0.64-1.621333-0.512-1.28-0.64-1.621334-0.64-1.621333-0.469333-1.450667z m-49.066667 222.848h341.888l-174.506666 57.6z" p-id="7954"></path></svg>`,
-                slogan: "Deploying Unreal Engine assets..." // 部署虚幻引擎资产... (紧扣 Epic 的看家本领 Unreal Engine)
+                slogan: { 
+                    en: "Deploying Unreal Engine assets...",
+                    zh: "部署虚幻引擎资产...",
+                    de: "Stelle Unreal Engine Assets bereit...",
+                    es: "Desplegando activos de Unreal Engine...",
+                    fr: "Déploiement des ressources Unreal Engine...",
+                    ja: "Unreal Engineアセットを展開中...",
+                    ru: "Развертывание ассетов Unreal Engine..."
+                }
             },
             { 
                 name: "HeyBox", 
                 href: "https://www.xiaoheihe.cn/app/user/profile/34128694", 
                 svg: `<svg t="1772760221899" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5104" width="1em" height="1em" fill="currentColor"><path d="M901.12 268.288c9.216 5.12 16.384 17.408 16.384 27.648v430.08c0 10.24-7.168 22.528-16.384 27.648L771.072 829.44c-9.216 5.12-16.384 1.024-16.384-9.216V399.36c0-10.24-7.168-22.528-16.384-27.648L608.256 296.96c-9.216-5.12-16.384-1.024-16.384 9.216v106.496c0 10.24-8.192 18.432-18.432 18.432H449.536c-10.24 0-18.432-8.192-18.432-18.432V16.384c0-10.24 7.168-14.336 16.384-9.216L901.12 268.288zM431.104 611.328c0-10.24 8.192-18.432 18.432-18.432h124.928c10.24 0 18.432 8.192 18.432 18.432v396.288c0 10.24-7.168 14.336-16.384 9.216L122.88 754.688c-9.216-5.12-16.384-17.408-16.384-27.648V296.96c0-10.24 7.168-22.528 16.384-27.648L252.928 194.56c9.216-5.12 16.384-1.024 16.384 9.216V624.64c0 10.24 7.168 22.528 16.384 27.648L414.72 727.04c9.216 5.12 16.384 1.024 16.384-9.216V611.328z" p-id="5105"></path></svg>`,
-                slogan: "Fetching player telemetry & statistics..." // 获取玩家遥测与统计数据... (紧扣小黑盒查战绩、查数据的核心工具属性)
+                slogan: { 
+                    en: "Fetching player telemetry & statistics...",
+                    zh: "获取玩家遥测与统计数据...",
+                    de: "Rufe Spieler-Telemetrie & Statistiken ab...",
+                    es: "Obteniendo telemetría y estadísticas del jugador...",
+                    fr: "Récupération de la télémétrie et des statistiques du joueur...",
+                    ja: "プレイヤーのテレメトリと統計を取得中...",
+                    ru: "Получение телеметрии и статистики игрока..."
+                }
             },
             { 
                 name: "Bilibili", 
                 href: "https://space.bilibili.com/3390563", 
                 icon: "fa-brands fa-bilibili", 
-                slogan: "Rendering danmaku overlay matrix..." // 渲染弹幕覆盖矩阵... (紧扣 B 站的灵魂：弹幕文化)
+                slogan: { 
+                    en: "Rendering danmaku overlay matrix...",
+                    zh: "渲染弹幕覆盖矩阵...",
+                    de: "Rendere Danmaku-Overlay-Matrix...",
+                    es: "Renderizando matriz de superposición de danmaku...",
+                    fr: "Rendu de la matrice de superposition danmaku...",
+                    ja: "弾幕オーバーレイマトリックスをレンダリング中...",
+                    ru: "Рендеринг матрицы наложения данмаку..."
+                }
             },
             { 
                 name: "YouTube", 
                 href: "https://www.youtube.com/@chip_0222", 
                 icon: "fa-brands fa-youtube", 
-                slogan: "Transcoding global video stream..." // 转码全球视频流... (紧扣 YouTube 庞大的视频分发和转码底层技术)
+                slogan: { 
+                    en: "Transcoding global video stream...",
+                    zh: "转码全球视频流...",
+                    de: "Transkodiere globalen Videostream...",
+                    es: "Transcodificando flujo de video global...",
+                    fr: "Transcodage du flux vidéo mondial...",
+                    ja: "グローバルビデオストリームをトランスコード中...",
+                    ru: "Транскодирование глобального видеопотока..."
+                }
             },
             { 
                 name: "TikTok", 
                 href: "https://www.tiktok.com/@ch1p_0222", 
                 icon: "fa-brands fa-tiktok", 
-                slogan: "Training personalized recommendation model..." // 训练个性化推荐模型... (紧扣字节跳动最核心的“猜你喜欢”算法)
+                slogan: { 
+                    en: "Training personalized recommendation model...",
+                    zh: "训练个性化推荐模型...",
+                    de: "Trainiere personalisiertes Empfehlungsmodell...",
+                    es: "Entrenando modelo de recomendación personalizado...",
+                    fr: "Entraînement du modèle de recommandation personnalisé...",
+                    ja: "パーソナライズされた推薦モデルをトレーニング中...",
+                    ru: "Обучение персонализированной модели рекомендаций..."
+                }
             },
             { 
                 name: "Facebook", 
                 href: "https://www.facebook.com/profile.php?id=61585810324278", 
                 icon: "fa-brands fa-facebook", 
-                slogan: "Mapping social graph connections..." // 映射社交图谱连接... (紧扣 Facebook 最早提出的 Social Graph 核心概念)
+                slogan: { 
+                    en: "Mapping social graph connections...",
+                    zh: "映射社交图谱连接...",
+                    de: "Kartiere Social-Graph-Verbindungen...",
+                    es: "Mapeando conexiones del grafo social...",
+                    fr: "Cartographie des connexions du graphe social...",
+                    ja: "ソーシャルグラフのつながりをマッピング中...",
+                    ru: "Отображение связей социального графа..."
+                }
             },
             { 
                 name: "Instagram", 
                 href: "https://www.instagram.com/ch1p_0222", 
                 icon: "fa-brands fa-instagram", 
-                slogan: "Applying visual enhancement algorithms..." // 应用视觉增强算法... (紧扣 IG 靠照片滤镜起家的核心)
+                slogan: { 
+                    en: "Applying visual enhancement algorithms...",
+                    zh: "应用视觉增强算法...",
+                    de: "Wende visuelle Verbesserungsalgorithmen an...",
+                    es: "Aplicando algoritmos de mejora visual...",
+                    fr: "Application d'algorithmes d'amélioration visuelle...",
+                    ja: "視覚強化アルゴリズムを適用中...",
+                    ru: "Применение алгоритмов визуального улучшения..."
+                }
             },
             { 
                 name: "X", 
                 href: "https://x.com/ch1p_0222", 
                 icon: "fa-brands fa-x-twitter", 
-                slogan: "Routing real-time data packets..." // 路由实时数据包... (紧扣推特短平快、类似网络数据包一样高频的实时信息流)
+                slogan: { 
+                    en: "Routing real-time data packets...",
+                    zh: "路由实时数据包...",
+                    de: "Leite Echtzeit-Datenpakete weiter...",
+                    es: "Enrutando paquetes de datos en tiempo real...",
+                    fr: "Routage des paquets de données en temps réel...",
+                    ja: "リアルタイムデータパケットをルーティング中...",
+                    ru: "Маршрутизация пакетов данных в реальном времени..."
+                }
             },
             { 
                 name: "Reddit", 
                 href: "https://www.reddit.com/user/chip_0222", 
                 icon: "fa-brands fa-reddit", 
-                slogan: "Aggregating sub-forum consensus data..." // 聚合子论坛共识数据... (紧扣 Reddit 的 Subreddit 机制以及 Upvote/Downvote 形成的群体共识)
+                slogan: { 
+                    en: "Aggregating sub-forum consensus data...",
+                    zh: "聚合子论坛共识数据...",
+                    de: "Aggregiere Sub-Forum-Konsensdaten...",
+                    es: "Agregando datos de consenso del subforo...",
+                    fr: "Agrégation des données de consensus du sous-forum...",
+                    ja: "サブフォーラムのコンセンサスデータを集約中...",
+                    ru: "Агрегирование данных консенсуса подфорума..."
+                }
             }
         ];
 
@@ -658,7 +803,6 @@ Ping statistics: 3 packets transmitted, 3 received, 0% packet loss.`);
             const container = document.getElementById('links-container');
             container.innerHTML = '';
             platforms.forEach((platform, index) => {
-                // 核心改动：判断如果有 svg 属性则使用 svg，否则使用 icon 类名
                 const iconContent = platform.svg 
                     ? platform.svg 
                     : `<i class="${platform.icon}"></i>`;
@@ -672,7 +816,7 @@ Ping statistics: 3 packets transmitted, 3 received, 0% packet loss.`);
                         </div>
                         <div class="flex-1 min-w-0" style="transform: translateZ(10px);">
                             <span class="text-xl font-semibold text-white block truncate">${platform.name}</span>
-                            <p class="text-zinc-400 text-xs mt-1 truncate">${platform.slogan}</p>
+                            <p class="text-zinc-400 text-xs mt-1 truncate">${platform.slogan[currentLang]}</p>
                         </div>
                         <div class="neon-text text-xl opacity-30 group-hover:opacity-100 transition-all" style="transform: translateZ(20px);">↗</div>
                     </a>
@@ -680,14 +824,41 @@ Ping statistics: 3 packets transmitted, 3 received, 0% packet loss.`);
                 container.innerHTML += cardHTML;
             });
             
-            document.querySelectorAll('.link-card').forEach(card => {
+            document.querySelectorAll('#links-container .link-card').forEach(card => {
                 card.addEventListener('mouseenter', playHoverSound);
                 card.addEventListener('click', playClickSound);
             });
+            
+            document.querySelectorAll('#links-container .tilt-element').forEach(el => {
+                el.addEventListener('mouseenter', () => { tiltState.active = true; tiltState.element = el; tiltState.rect = el.getBoundingClientRect(); });
+                el.addEventListener('mouseleave', () => { tiltState.active = false; tiltState.element = null; el.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`; });
+            });
+            
+            initCursorHoverForLinks();
+        }
+
+        // ==================== 语言切换逻辑 ====================
+        function setLanguage(langCode) {
+            currentLang = langCode;
+            
+            // 更新静态文本
+            document.getElementById('lang-label').innerText = i18n[currentLang].name;
+            document.getElementById('portal-btn-text').innerText = i18n[currentLang].portalBtn;
+            
+            // 重新渲染链接卡片与打字机
+            renderLinks();
+            initTypewriter();
         }
 
         function initCursorHover() {
-            document.querySelectorAll('.cursor-target, a').forEach(el => {
+            document.querySelectorAll('.cursor-target, a, button').forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+            });
+        }
+        
+        function initCursorHoverForLinks() {
+            document.querySelectorAll('#links-container .cursor-target, #links-container a').forEach(el => {
                 el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
                 el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
             });
